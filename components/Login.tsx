@@ -3,12 +3,10 @@ import react, {Component} from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { useRef } from 'react';
 import{ useState } from 'react';
-import { NavigationContainer, StackActions } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
 import { StyleSheet, Text, View, Button, TextInput, TouchableOpacity, ImageBackground, Image } from 'react-native';
 
 var _BLUE = '#2196f3';
-var _GRAY = '#303030'
+var _GRAY = '#303030';
 
 function LoginScreen({ navigation }) {
 
@@ -25,8 +23,8 @@ function LoginScreen({ navigation }) {
         }
 
     function CheckName(){
-        if(userName=='jesus'){
-            navigation.navigate('Home');
+        if(userName=='Jesus'){
+            navigation.navigate('Home', {userId: 40, User: userName});
         }
         else setError('Wrong user name or password: '+ userName);
     }
@@ -73,9 +71,15 @@ function LoginScreen({ navigation }) {
         <TouchableOpacity style ={
             title.registerButton}
             onPress={clickHandler2}
-
         >
             <Text>New User? Register here!</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style ={
+            title.ForgotButton}
+            onPress={clickHandler2}
+        >
+            <Text>Forgot Password?</Text>
         </TouchableOpacity>
 
         <Text style={title.status}>{error}</Text>
@@ -88,13 +92,13 @@ function LoginScreen({ navigation }) {
     container: {
         flex: 1,
         paddingTop: 5,
-        backgroundColor: _BLUE,
+        backgroundColor: _GRAY,
         alignItems: 'center',
         justifyContent: 'center'
     },
 
     titleCard: {
-        color: _GRAY,
+        color: _BLUE,
         fontWeight: 'bold',
         fontSize: 64,
         fontStyle: 'italic',
@@ -111,6 +115,8 @@ function LoginScreen({ navigation }) {
 
     ButtonContainer: {
         marginTop: 0,
+        borderRadius: 5,
+        borderColor: 'red',
         width: 150,
         height: 50,
     },
@@ -120,7 +126,15 @@ function LoginScreen({ navigation }) {
             marginLeft: 90,
             width: 250,
             height: 20,
-        },
+    },
+
+    ForgotButton: {
+        marginTop: 5,
+        marginLeft: 150,
+        width: 250,
+        height: 20,
+    },
+
 
     status: {
         paddingTop: 5,
