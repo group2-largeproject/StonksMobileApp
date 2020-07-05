@@ -1,12 +1,13 @@
 import * as React from 'react';
 import { Button, View, Text } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import {createDrawerNavigator, DrawerItemList, DrawerItem, DrawerContentScrollView} from '@react-navigation/drawer';
 import Login from './components/Login';
 import Feed from './components/Feed';
 import Stats from './components/Stats';
 import Search from './components/Search';
+import RegisterScreen from './components/Register';
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -23,7 +24,22 @@ function App() {
           name="Login" 
           component={Login}
         />
-        <Stack.Screen name="Home" component={HomeScreen} options={{title: 'Logoff'}} />
+        <Stack.Screen 
+          name="Home" 
+          component={HomeScreen} 
+          options={{title: 'Logoff',
+          gestureEnabled:false
+          }}
+        />
+
+        <Stack.Screen
+          name="RegisterScreen"
+          component={RegisterScreen}
+          options={{title: 'Registration',
+          gestureEnabled: false
+        }}
+        />
+
       </Stack.Navigator>
     </NavigationContainer>
   );
@@ -31,11 +47,7 @@ function App() {
 
 export default App;
 
-function HomeScreen({ navigation, route }) {
-
-  const { userId } = route.params;
-  const { User } = route.params;
-
+function HomeScreen() {
   return (
     <Drawer.Navigator 
       drawerContentOptions={{
@@ -46,7 +58,7 @@ function HomeScreen({ navigation, route }) {
         backgroundColor: _BLUE,
         width: 150,
       }}
-      drawerContent={props=><LogoffButton{...props} />}
+      drawerContent={props=><DrawerButton {...props} />}
     >
       <Drawer.Screen name="Feed" component = {Feed} />
       <Drawer.Screen name="Stats" component = {Stats} />
@@ -55,13 +67,14 @@ function HomeScreen({ navigation, route }) {
   );
 }
 
-function LogoffButton(props){
+function DrawerButton( props ){
+  const navigation = useNavigation();
   return (
     <DrawerContentScrollView {...props}>
       <DrawerItemList{...props}/>
         <DrawerItem 
           label = "Logoff" 
-          onPress={()=> alert('Logoff')}
+          onPress={()=> alert('some command')}
         />
     </DrawerContentScrollView>
   )

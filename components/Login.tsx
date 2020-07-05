@@ -19,7 +19,7 @@ function LoginScreen({ navigation }) {
     }
 
     const clickHandler2 = () => {
-            setError('Registration success!');
+            navigation.navigate('Register');
         }
 
     function CheckName(){
