@@ -7,7 +7,7 @@ import Login from './components/Login';
 import Feed from './components/Feed';
 import Stats from './components/Stats';
 import Search from './components/Search';
-import RegisterScreen from './components/Register';
+import Register from './components/Register';
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -33,8 +33,8 @@ function App() {
         />
 
         <Stack.Screen
-          name="RegisterScreen"
-          component={RegisterScreen}
+          name="Register"
+          component={Register}
           options={{title: 'Registration',
           gestureEnabled: false
         }}

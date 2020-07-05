@@ -8,20 +8,70 @@ import { StyleSheet, Text, View, Button, TextInput, TouchableOpacity, ImageBackg
 var _BLUE = '#2196f3';
 var _GRAY = '#303030';
 
-const[error, setError] = useState('');
-const[userName, setUserName] = useState('');
-const[passWord, setPassword] = useState('');
-
 function Register(){
+
+    const[error, setError] = useState('');
+    const[firstname, setFirstname] = useState('');
+    const[lastname, setLastname] = useState('');
+    const[username, setUsername] = useState('');
+    const[email, setEmail] = useState('');
+    const[password, setPassword] = useState('');
+
     return (
         <View style={title.container}>
-            <Text>
-                style={title.titleCard}>STONKS
+            <Text 
+                style={title.titleCard}>Create Account
             </Text>
+        
+        <TextInput
+            style={title.input}
+            keyboardType = 'default'
+            placeholder='Firstname'
+            onChangeText={firstname => setFirstname(firstname)}
+        />
+
+        <TextInput
+            style={title.input}
+            keyboardType = 'default'
+            placeholder='Lastname'
+            onChangeText={lastname => setLastname(lastname)}
+        />
+
+        <TextInput
+            style={title.input}
+            keyboardType = 'default'
+            placeholder='Username'
+            onChangeText={username => setUsername(username)}
+        />
+
+        <TextInput
+            style={title.input}
+            keyboardType = 'default'
+            placeholder='Email'
+            onChangeText={email => setEmail(email)}
+        />
+
+        <TextInput
+            style={title.input}
+            keyboardType = 'default'
+            placeholder='Password'
+            onChangeText={password => setPassword(password)}
+        />
+        <LogButton ScreenName= "Login" />
         </View>
-        );
-    }
+    );
+}
 export default Register;
+
+function LogButton({ScreenName}){
+    const navigation = useNavigation();
+    return(
+      <Button
+        title= 'Register'
+        onPress={() => navigation.navigate(ScreenName)}
+      />
+    );
+  }
 
 const title = StyleSheet.create({
     container: {
@@ -43,7 +93,7 @@ const title = StyleSheet.create({
         titleCard: {
             color: _BLUE,
             fontWeight: 'bold',
-            fontSize: 64,
+            fontSize: 24,
             fontStyle: 'italic',
         },
     
