@@ -3,6 +3,7 @@ import react, {Component} from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { useRef } from 'react';
 import{ useState } from 'react';
+import { useIsFocused } from '@react-navigation/native';
 import { StyleSheet, Text, View, Button, TextInput, TouchableOpacity, ImageBackground, Image } from 'react-native';
 
 var _BLUE = '#2196f3';
@@ -11,8 +12,10 @@ var _GRAY = '#303030';
 function LoginScreen({ navigation }) {
 
     const[error, setError] = useState('');
-    const[userName, setUserName] = useState('');
-    const[passWord, setPassword] = useState('');
+    const[username, setusername] = useState('');
+    const[password, setPassword] = useState('');
+
+    const isFocused = useIsFocused();
 
     const clickHandler = () => {
         setError('login success!');
@@ -22,44 +25,46 @@ function LoginScreen({ navigation }) {
             navigation.navigate('Register');
         }
 
-    function CheckName(){
-        if(userName=='Jesus'){
-            navigation.navigate('Home', {userId: 40, User: userName});
+    const clickHandler3 = () => {
+            navigation.navigate('Forgotpassword');
         }
-        else setError('Wrong user name or password: '+ userName);
+
+    function CheckName(){
+        if(username=='Jesus'&& password=='Pass'){
+            navigation.navigate('Home', {userId: 40, User: username});
+        }
+        else setError('Invalid user name or password!');
     }
 
     return (
-
         <View style={title.container}>
 
         <Image 
-            source={require('./stocks.png')} 
+            source={require('./StonksMainLogo.png')} 
             style={title.image}
         >
             
         </Image>
 
-        <Text 
-                style={title.titleCard}>STONKS
-                
-        </Text>
-
         <StatusBar style = "auto"/>
 
         <TextInput
+            
             style={title.input}
             keyboardType = 'email-address'
             placeholder='e.g John Doe'
-            onChangeText={userName => setUserName(userName)}
+            onChangeText={username => setusername(username)}
         />
 
         <TextInput
+            clearTextOnFocus={true}
             style={title.input}
             keyboardType = 'default'
             placeholder='e.g PassWord'
             textContentType={'password'}
-            secureTextEntry />
+            secureTextEntry 
+            onChangeText={password => setPassword(password)}
+        />
 
         <View style={title.ButtonContainer}>
             <Button 
@@ -77,9 +82,9 @@ function LoginScreen({ navigation }) {
 
         <TouchableOpacity style ={
             title.ForgotButton}
-            onPress={clickHandler2}
+            onPress={clickHandler3}
         >
-            <Text>Forgot Password?</Text>
+            <Text> Forgot Password?</Text>
         </TouchableOpacity>
 
         <Text style={title.status}>{error}</Text>
@@ -140,7 +145,7 @@ function LoginScreen({ navigation }) {
         paddingTop: 5,
         alignItems: 'center',
         justifyContent: 'center',
-        fontSize: 32,
+        fontSize: 18,
     },
 
     input: {

@@ -8,6 +8,9 @@ import Feed from './components/Feed';
 import Stats from './components/Stats';
 import Search from './components/Search';
 import Register from './components/Register';
+import Forgotpassword from './components/Forgotpassword';
+import Passwordrecovery from './components/Passwordrecovery';
+import Passwordreset from './components/Passwordreset';
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -36,7 +39,31 @@ function App() {
           name="Register"
           component={Register}
           options={{title: 'Registration',
-          gestureEnabled: false
+          gestureEnabled: true
+        }}
+        />
+
+        <Stack.Screen
+          name="Forgotpassword"
+          component={Forgotpassword}
+          options={{title: 'Forgotpassword',
+          
+        }}
+        />
+
+        <Stack.Screen
+          name="Passwordrecovery"
+          component={Passwordrecovery}
+          options={{title: 'Passwordrecovery',
+          
+        }}
+        />
+
+        <Stack.Screen
+          name="Passwordreset"
+          component={Passwordreset}
+          options={{title: 'Passwordreset',
+          
         }}
         />
 
