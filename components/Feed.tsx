@@ -13,8 +13,10 @@ function Feed() {
     
     return (
         <View style={title.container}>
-            <Text>this is the feed </Text>
-            <LogButton ScreenName= "Login" />
+            <View style={title.logoffbutton}>
+              <LogButton ScreenName= "Login" />
+            </View>
+            <Text style={title.text}>Showing you some statistics </Text>
         </View>
     );
 }
@@ -30,14 +32,22 @@ function LogButton({ScreenName}){
   }
 
 const title = StyleSheet.create({
-    container: {
-        flex: 1,
-        paddingTop: 5,
-        backgroundColor: _BLUE,
-        alignItems: 'center',
-        justifyContent: 'center'
-    },
+  container: {
+      flex: 1,
+      backgroundColor: _BLUE,
+  },
+
+  logoffbutton: {
+    paddingTop: 25,
+    paddingLeft: 5,
+    alignItems: 'flex-start',
+    flexDirection:'row-reverse',
+  },
+
+  text  :{
+    fontSize: 18,
+    height: 60,
+    paddingLeft: 5,
+  }
 })
-
-
 export default Feed;

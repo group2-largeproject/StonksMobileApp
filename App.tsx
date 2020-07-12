@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { Button, View, Text } from 'react-native';
 import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import {createDrawerNavigator, DrawerItemList, DrawerItem, DrawerContentScrollView} from '@react-navigation/drawer';
@@ -17,65 +16,69 @@ const Drawer = createDrawerNavigator();
 const _BLUE = '#2196f3';
 const _GRAY = '#303030';
 
-function App() {
-  return (
-    <NavigationContainer>
-      <Stack.Navigator initialRouteName="Login"
-        headerMode = 'none'
-      >
-        <Stack.Screen 
-          name="Login" 
-          component={Login}
-        />
-        <Stack.Screen 
-          name="Home" 
-          component={HomeScreen} 
-          options={{title: 'Logoff',
-          gestureEnabled:false
+
+
+function App(){
+    return (
+      <NavigationContainer>
+        <Stack.Navigator initialRouteName="Login"
+          headerMode = 'none'
+        >
+          <Stack.Screen 
+            name="Login" 
+            component={Login}
+          />
+
+          <Stack.Screen 
+            name="Home" 
+            component={HomeScreen} 
+            options={{title: 'Logoff',
+            gestureEnabled:false
+            }}
+          />
+
+          <Stack.Screen
+            name="Register"
+            component={Register}
+            options={{title: 'Registration',
+            gestureEnabled: true
           }}
-        />
+          />
 
-        <Stack.Screen
-          name="Register"
-          component={Register}
-          options={{title: 'Registration',
-          gestureEnabled: true
-        }}
-        />
+          <Stack.Screen
+            name="Forgotpassword"
+            component={Forgotpassword}
+            options={{title: 'Forgotpassword',
+            
+          }}
+          />
 
-        <Stack.Screen
-          name="Forgotpassword"
-          component={Forgotpassword}
-          options={{title: 'Forgotpassword',
-          
-        }}
-        />
+          <Stack.Screen
+            name="Passwordrecovery"
+            component={Passwordrecovery}
+            options={{title: 'Passwordrecovery',
+            
+          }}
+          />
 
-        <Stack.Screen
-          name="Passwordrecovery"
-          component={Passwordrecovery}
-          options={{title: 'Passwordrecovery',
-          
-        }}
-        />
+          <Stack.Screen
+            name="Passwordreset"
+            component={Passwordreset}
+            options={{title: 'Passwordreset',
+            
+          }}
+          />
 
-        <Stack.Screen
-          name="Passwordreset"
-          component={Passwordreset}
-          options={{title: 'Passwordreset',
-          
-        }}
-        />
-
-      </Stack.Navigator>
-    </NavigationContainer>
-  );
-}
-
+        </Stack.Navigator>
+      </NavigationContainer>
+    );
+  }
 export default App;
 
+
 function HomeScreen() {
-  return (
+  
+    return (
     <Drawer.Navigator 
       drawerContentOptions={{
         activeTintColor: _GRAY,

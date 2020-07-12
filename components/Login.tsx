@@ -1,98 +1,114 @@
 import * as React from 'react';
-import react, {Component} from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { useRef } from 'react';
 import{ useState } from 'react';
-import { useIsFocused } from '@react-navigation/native';
-import { StyleSheet, Text, View, Button, TextInput, TouchableOpacity, ImageBackground, Image } from 'react-native';
+import { StyleSheet, ActivityIndicator, Text, View, Button, TextInput, TouchableOpacity, ImageBackground, Image } from 'react-native';
+import { State } from 'react-native-gesture-handler';
+import { useNavigation } from '@react-navigation/native';
 
 var _BLUE = '#2196f3';
 var _GRAY = '#303030';
+//login: Malaniz ps: admin123
 
-function LoginScreen({ navigation }) {
+function LoginScreen() {
 
-    const[error, setError] = useState('');
-    const[username, setusername] = useState('');
-    const[password, setPassword] = useState('');
-
-    const isFocused = useIsFocused();
+    const[message, setMessage] = useState('');
+    const navigation = useNavigation();
+    const BASE_URL = 'https://cop4331-large-group2.herokuapp.com/';
+    const[isLoading, setLoading] = useState(false);
+    const[loginUsername, setUsername] = useState('i');
+    const[loginPassword, setPassword] = useState('i');
 
     const clickHandler = () => {
-        setError('login success!');
-    }
-
-    const clickHandler2 = () => {
             navigation.navigate('Register');
         }
 
-    const clickHandler3 = () => {
+    const clickHandler2 = () => {
             navigation.navigate('Forgotpassword');
         }
 
-    function CheckName(){
-        if(username=='Jesus'&& password=='Pass'){
-            navigation.navigate('Home', {userId: 40, User: username});
-        }
-        else setError('Invalid user name or password!');
+    
+    const doLogin = async event => 
+    {
+      event.preventDefault();     
+      if( loginUsername == '' || loginPassword == '' ){
+        alert('Please fill out all fields!');
+      }
+      else{
+        var js = 
+        '{ "username":"' + loginUsername + 
+        '","password":"' + loginPassword 
+        +'"}';
+        
+        const response = await fetch(BASE_URL + 'api/login',
+        {
+            method: 'POST',
+            headers: new Headers({'Content-Type':'application/json'}),
+            body:js,
+        })
+        .catch((error) => setMessage(error))
+        .finally(() => setLoading(false));
+        var res = JSON.parse(await response.text());
+        setMessage(res.email);
     }
+}
+
 
     return (
         <View style={title.container}>
 
-        <Image 
-            source={require('./StonksMainLogo.png')} 
-            style={title.image}
-        >
-            
-        </Image>
+            <Image 
+                source={require('./StonksMainLogo.png')} 
+                style={title.image}
+            >
+                
+            </Image>
 
-        <StatusBar style = "auto"/>
+            <StatusBar style = "auto"/>
 
-        <TextInput
-            
-            style={title.input}
-            keyboardType = 'email-address'
-            placeholder='e.g John Doe'
-            onChangeText={username => setusername(username)}
-        />
-
-        <TextInput
-            clearTextOnFocus={true}
-            style={title.input}
-            keyboardType = 'default'
-            placeholder='e.g PassWord'
-            textContentType={'password'}
-            secureTextEntry 
-            onChangeText={password => setPassword(password)}
-        />
-
-        <View style={title.ButtonContainer}>
-            <Button 
-                title="Login"
-                onPress={CheckName}
+            <TextInput
+                
+                style={title.input}
+                keyboardType = 'email-address'
+                placeholder='e.g John Doe'
+                onChangeText = {loginUsername => setUsername(loginUsername)}
             />
-        </View>
 
-        <TouchableOpacity style ={
-            title.registerButton}
-            onPress={clickHandler2}
-        >
-            <Text>New User? Register here!</Text>
-        </TouchableOpacity>
+            <TextInput
+                clearTextOnFocus={true}
+                style={title.input}
+                keyboardType = 'default'
+                placeholder='e.g PassWord'
+                textContentType={'password'}
+                secureTextEntry 
+                onChangeText={loginPassword => setPassword(loginPassword)}
+            />
 
-        <TouchableOpacity style ={
-            title.ForgotButton}
-            onPress={clickHandler3}
-        >
+            <View style={title.ButtonContainer}>
+                <Button 
+                    title="Login"
+                    onPress= {doLogin}
+                />
+            </View>
+
+            <TouchableOpacity style ={
+                title.registerButton}
+                onPress={clickHandler}
+            >
+            <Text> No Account? Register here!</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style ={
+                title.ForgotButton}
+                onPress={clickHandler2}
+            >
             <Text> Forgot Password?</Text>
-        </TouchableOpacity>
+            </TouchableOpacity>
+            <Text> Error: {message}</Text>
 
-        <Text style={title.status}>{error}</Text>
-    
-      </View>
+        </View>
     );
-  }
-
+}
   const title = StyleSheet.create({
     container: {
         flex: 1,
@@ -107,6 +123,13 @@ function LoginScreen({ navigation }) {
         fontWeight: 'bold',
         fontSize: 64,
         fontStyle: 'italic',
+    },
+
+    loader:{
+        flex: 1,
+        justifyContent: 'flex-end',
+        alignItems: 'flex-end',
+        position:'absolute',
     },
 
     image: {
@@ -158,4 +181,4 @@ function LoginScreen({ navigation }) {
     }
 });
 
-  export default LoginScreen;
+export default LoginScreen;

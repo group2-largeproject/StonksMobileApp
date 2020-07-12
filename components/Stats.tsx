@@ -1,6 +1,7 @@
 import * as React from 'react';
 import react, {Component} from 'react';
 import { useNavigation } from '@react-navigation/native';
+import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, Button, TextInput, TouchableOpacity, ImageBackground, Image } from 'react-native';
 
 var _BLUE = '#2196f3';
@@ -10,8 +11,11 @@ function Stats({ route, navigation }) {
     
     return (
         <View style={title.container}>
-            <Text>Showing you some statistics </Text>
-            <LogButton ScreenName= "Login" />
+            
+            <View style={title.logoffbutton}>
+              <LogButton ScreenName= "Login" />
+            </View>
+            <Text style={title.text}>Showing you some statistics </Text>
         </View>
     );
 }
@@ -26,14 +30,24 @@ function LogButton({ScreenName}){
     );
   }
 
-const title = StyleSheet.create({
+  const title = StyleSheet.create({
     container: {
         flex: 1,
-        paddingTop: 5,
         backgroundColor: _BLUE,
-        alignItems: 'center',
-        justifyContent: 'center'
     },
-})
+  
+    logoffbutton: {
+      paddingTop: 25,
+      paddingLeft: 5,
+      alignItems: 'flex-start',
+      flexDirection:'row-reverse',
+    },
+  
+    text  :{
+      fontSize: 18,
+      height: 60,
+      paddingLeft: 5,
+    }
+  })
 
 export default Stats;

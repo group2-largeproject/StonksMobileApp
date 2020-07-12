@@ -16,6 +16,8 @@ function Register(){
     const[username, setUsername] = useState('');
     const[email, setEmail] = useState('');
     const[password, setPassword] = useState('');
+    const[Cpassword, setCPassword] = useState('');
+
 
     return (
         <View style={title.container}>
@@ -57,7 +59,18 @@ function Register(){
             placeholder='Password'
             onChangeText={password => setPassword(password)}
         />
+
+        <TextInput
+            style={title.input}
+            keyboardType = 'default'
+            placeholder='Confirm Password'
+            onChangeText={Cpassword => setCPassword(Cpassword)}
+        />
         <LogButton ScreenName= "Login" />
+
+        <Text 
+                style={title.titleCard}>{error}
+        </Text>
         </View>
     );
 }
@@ -67,7 +80,7 @@ function LogButton({ScreenName}){
     const navigation = useNavigation();
     return(
       <Button
-        title= 'Register'
+        title= 'SignUp'
         onPress={() => navigation.navigate(ScreenName)}
       />
     );
