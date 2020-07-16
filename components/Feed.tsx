@@ -1,25 +1,156 @@
 import * as React from 'react';
 import react, {Component} from 'react';
-import { useRef } from 'react';
-import{ useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
-import Login from './Login';
-import { StyleSheet, Text, View, Button, TextInput, TouchableOpacity, ImageBackground, Image } from 'react-native';
+import { LineChart } from 'react-native-chart-kit';
+import { 
+  StyleSheet, 
+  FlatList, 
+  Text, 
+  View, 
+  Button, 
+  TextInput, 
+  TouchableOpacity, 
+  ActivityIndicator,
+ } from 'react-native';
 
 var _BLUE = '#2196f3';
+var _BLUE2 = '#1e88e5';
 var _GRAY = '#303030';
 
-function Feed() {
+export default class Feed extends react.Component <{},any> {
     
-    return (
-        <View style={title.container}>
-            <View style={title.logoffbutton}>
-              <LogButton ScreenName= "Login" />
+  static navigationOptions = ({ navigation }) => {
+    return {
+      title: "Source Listing",
+      headerStyle: {backgroundColor: "#fff"},
+      headerTitleStyle: {textAlign: "center",flex: 1}
+     };
+    };
+
+    line = {
+      labels: ['January', 'February', 'March', 'April', 'May', 'June'],
+      datasets: [
+        {
+          data: [20, 45, 28, 80, 99, 43],
+          strokeWidth: 2, // optional
+        },
+      ],
+    };
+
+    constructor(props) {
+      super(props);
+      this.state = {
+        loading: true,
+        dataSource:[]
+       };
+     }
+
+     componentDidMount(){
+      fetch("https://reactnative.dev/movies.json")
+      .then(response => response.json())
+      .then((responseJson)=> {
+        this.setState({
+         loading: false,
+         dataSource: responseJson
+        })
+      })
+      .catch(error=>console.log(error)) //to catch the errors if any
+      }
+
+      FlatListItemSeparator = () => {
+        return (
+          <View 
+            style={{
+              height: .5,
+              width:"100%",
+              backgroundColor:"rgba(0,0,0,0.5)",
+            }}
+          />
+        );
+      }
+
+      renderItem=(data)=>
+        <TouchableOpacity style={styles.list}>
+          <Text style={styles.lightText}>{data.item.title}</Text>
+          <Text style={styles.lightText}>{data.item.releaseYear}</Text>
+        </TouchableOpacity>
+        render(){
+          if(this.state.loading){
+            return( 
+              <View style={styles.loader}> 
+                <ActivityIndicator size="large" color="#0c9"/>
+              </View>
+          )}
+            return(
+            <View style={styles.container}>
+              
+              <View style={styles.logoffbutton}>
+                <LogButton ScreenName= "Login" /> 
+              </View>
+              <Text style={styles.text}> Stocks Added </Text>
+              <FlatList
+                  data= {this.state.dataSource.movies.slice(0,3)}
+                  ItemSeparatorComponent = {this.FlatListItemSeparator}
+                  renderItem= {item=> this.renderItem(item)}
+                  keyExtractor= {item=>item.id.toString()}
+              />
+              <Text style={styles.text2}> Stocks Added </Text>
+
+                
             </View>
-            <Text style={title.text}>Showing you some statistics </Text>
-        </View>
-    );
-}
+            
+          )
+        }
+      }
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: _BLUE,
+      paddingTop: 0,
+    },
+    loader:{
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+      backgroundColor: _GRAY
+    },
+    logoffbutton: {
+      flex: 0,
+      paddingTop: 25,
+      color: _GRAY,
+      paddingLeft: 5,
+      alignItems: 'flex-start',
+      flexDirection:'row-reverse',
+    },
+    text:{
+      paddingTop: 25,
+      flex: 0,
+      position: 'absolute',
+      fontSize: 24,
+      color: _GRAY,
+      
+    },
+    text2:{
+      paddingBottom: 300,
+      position: 'relative',
+      flex: 1,
+      fontSize: 24,
+      color: _GRAY,
+      
+    },
+    list:{
+      paddingVertical: 4,
+      margin: 5,
+      flexGrow: 0,
+      height: 60,
+      width: 350,
+      backgroundColor: _BLUE2
+    },
+    lightText:{
+      fontSize: 12,
+      alignItems: 'flex-start',
+    }
+  });
 
 function LogButton({ScreenName}){
     const navigation = useNavigation();
@@ -30,24 +161,3 @@ function LogButton({ScreenName}){
       />
     );
   }
-
-const title = StyleSheet.create({
-  container: {
-      flex: 1,
-      backgroundColor: _BLUE,
-  },
-
-  logoffbutton: {
-    paddingTop: 25,
-    paddingLeft: 5,
-    alignItems: 'flex-start',
-    flexDirection:'row-reverse',
-  },
-
-  text  :{
-    fontSize: 18,
-    height: 60,
-    paddingLeft: 5,
-  }
-})
-export default Feed;

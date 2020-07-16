@@ -81,6 +81,7 @@ export default class Search extends react.Component <{},any> {
               <Text style={styles.text}> Search Stocks </Text>
               <FlatList
                   data= {this.state.dataSource}
+                  initialNumToRender = {9}
                   ItemSeparatorComponent = {this.FlatListItemSeparator}
                   renderItem= {item=> this.renderItem(item)}
                   keyExtractor= {item=>item.id.toString()}
@@ -104,6 +105,7 @@ export default class Search extends react.Component <{},any> {
     logoffbutton: {
       flex: 0,
       paddingTop: 25,
+      color: _GRAY,
       paddingLeft: 5,
       alignItems: 'flex-start',
       flexDirection:'row-reverse',
@@ -119,6 +121,7 @@ export default class Search extends react.Component <{},any> {
     list:{
       paddingVertical: 4,
       margin: 5,
+      flexGrow: 1,
       backgroundColor: _BLUE2
     },
     lightText:{

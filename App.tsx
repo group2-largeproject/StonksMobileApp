@@ -103,7 +103,7 @@ function DrawerButton( props ){
     <DrawerContentScrollView {...props}>
       <DrawerItemList{...props}/>
         <DrawerItem 
-          label = "Logoff" 
+          label = "" 
           onPress={()=> alert('some command')}
         />
     </DrawerContentScrollView>

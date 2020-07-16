@@ -20,7 +20,8 @@ function LoginScreen() {
     const[loginPassword, setPassword] = useState('i');
 
     const clickHandler = () => {
-            navigation.navigate('Register');
+            //navigation.navigate('Register');
+            navigation.navigate('Home');
         }
 
     const clickHandler2 = () => {
@@ -49,7 +50,10 @@ function LoginScreen() {
         .catch((error) => setMessage(error))
         .finally(() => setLoading(false));
         var res = JSON.parse(await response.text());
-        setMessage(res.email);
+        setMessage(res.error);
+        if(res.error==''){
+            navigation.navigate('Home');
+        }
     }
 }
 
@@ -80,7 +84,7 @@ function LoginScreen() {
                 keyboardType = 'default'
                 placeholder='e.g PassWord'
                 textContentType={'password'}
-                secureTextEntry 
+                secureTextEntry
                 onChangeText={loginPassword => setPassword(loginPassword)}
             />
 

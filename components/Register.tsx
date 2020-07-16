@@ -10,14 +10,46 @@ var _GRAY = '#303030';
 
 function Register(){
 
-    const[error, setError] = useState('');
+    const BASE_URL = 'https://cop4331-large-group2.herokuapp.com/';
+    const navigation = useNavigation();
+    const[message, setMessage] = useState('');
     const[firstname, setFirstname] = useState('');
     const[lastname, setLastname] = useState('');
     const[username, setUsername] = useState('');
     const[email, setEmail] = useState('');
     const[password, setPassword] = useState('');
-    const[Cpassword, setCPassword] = useState('');
+    const[confirmpassword, setconfirmPassword] = useState('');
 
+    const doRegister = async event => 
+    {
+      event.preventDefault();     
+      if( username == '' || password == '' ){
+        alert('Please fill required fields!');
+      }
+      else if(confirmpassword!==password){
+        alert('passwords do not match!');
+      }
+      else{
+        var js = 
+        '{ "username":"' + username + 
+        '","password":"' + password +
+        '", "email":"' +  email +
+        '", "firstName":"' + firstname +
+        '", "lastName":"' + lastname
+        +'"}';
+        
+        const response = await fetch(BASE_URL + 'api/register',
+        {
+            method: 'POST',
+            headers: new Headers({'Content-Type':'application/json'}),
+            body:js,
+        })
+        .catch((error) => setMessage(error))
+        var res = JSON.parse(await response.text());
+        setMessage(res.error);
+        navigation.navigate('Login');
+    }
+}
 
     return (
         <View style={title.container}>
@@ -25,66 +57,65 @@ function Register(){
                 style={title.titleCard}>Create Account
             </Text>
         
-        <TextInput
-            style={title.input}
-            keyboardType = 'default'
-            placeholder='Firstname'
-            onChangeText={firstname => setFirstname(firstname)}
-        />
+            <TextInput
+                style={title.input}
+                keyboardType = 'default'
+                placeholder='Firstname'
+                onChangeText={firstname => setFirstname(firstname)}
+            />
 
-        <TextInput
-            style={title.input}
-            keyboardType = 'default'
-            placeholder='Lastname'
-            onChangeText={lastname => setLastname(lastname)}
-        />
+            <TextInput
+                style={title.input}
+                keyboardType = 'default'
+                placeholder='Lastname'
+                onChangeText={lastname => setLastname(lastname)}
+            />
 
-        <TextInput
-            style={title.input}
-            keyboardType = 'default'
-            placeholder='Username'
-            onChangeText={username => setUsername(username)}
-        />
+            <TextInput
+                style={title.input}
+                keyboardType = 'default'
+                placeholder='Username'
+                onChangeText={username => setUsername(username)}
+            />
 
-        <TextInput
-            style={title.input}
-            keyboardType = 'default'
-            placeholder='Email'
-            onChangeText={email => setEmail(email)}
-        />
+            <TextInput
+                style={title.input}
+                keyboardType = 'email-address'
+                placeholder='Email'
+                onChangeText={email => setEmail(email)}
+            />
 
-        <TextInput
-            style={title.input}
-            keyboardType = 'default'
-            placeholder='Password'
-            onChangeText={password => setPassword(password)}
-        />
+            <TextInput
+                style={title.input}
+                keyboardType = 'visible-password'
+                placeholder='Password'
+                textContentType='password'
+                secureTextEntry
+                onChangeText={password => setPassword(password)}
+            />                                                          
 
-        <TextInput
-            style={title.input}
-            keyboardType = 'default'
-            placeholder='Confirm Password'
-            onChangeText={Cpassword => setCPassword(Cpassword)}
-        />
-        <LogButton ScreenName= "Login" />
+            <TextInput
+                style={title.input}
+                keyboardType = 'visible-password'
+                placeholder='Confirm Password'
+                textContentType='password'
+                secureTextEntry
+                onChangeText={confirmpassword => setconfirmPassword(confirmpassword)}
+            />
+            <View style={title.ButtonContainer}>
+                <Button 
+                    title="Login"
+                    onPress= {doRegister}
+                />
+            </View>
 
-        <Text 
-                style={title.titleCard}>{error}
-        </Text>
+            <Text 
+                style={title.titleCard}>{message}
+            </Text>
         </View>
     );
 }
 export default Register;
-
-function LogButton({ScreenName}){
-    const navigation = useNavigation();
-    return(
-      <Button
-        title= 'SignUp'
-        onPress={() => navigation.navigate(ScreenName)}
-      />
-    );
-  }
 
 const title = StyleSheet.create({
     container: {
