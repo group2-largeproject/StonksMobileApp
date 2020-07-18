@@ -10,8 +10,8 @@ var _BLUE = '#2196f3';
 var _GRAY = '#303030';
 //login: Malaniz ps: admin123
 
-function LoginScreen() {
-
+function LoginScreen({route}) {
+  
     const[message, setMessage] = useState('');
     const navigation = useNavigation();
     const BASE_URL = 'https://cop4331-large-group2.herokuapp.com/';
@@ -21,41 +21,44 @@ function LoginScreen() {
 
     const clickHandler = () => {
             //navigation.navigate('Register');
-            navigation.navigate('Home');
+            navigation.navigate('Register');
         }
 
     const clickHandler2 = () => {
-            navigation.navigate('Forgotpassword');
+            //navigation.navigate('Forgotpassword');
+            navigation.navigate('Home');
         }
 
     
     const doLogin = async event => 
-    {
-      event.preventDefault();     
-      if( loginUsername == '' || loginPassword == '' ){
-        alert('Please fill out all fields!');
-      }
-      else{
-        var js = 
-        '{ "username":"' + loginUsername + 
-        '","password":"' + loginPassword 
-        +'"}';
-        
-        const response = await fetch(BASE_URL + 'api/login',
         {
-            method: 'POST',
-            headers: new Headers({'Content-Type':'application/json'}),
-            body:js,
-        })
-        .catch((error) => setMessage(error))
-        .finally(() => setLoading(false));
-        var res = JSON.parse(await response.text());
-        setMessage(res.error);
-        if(res.error==''){
-            navigation.navigate('Home');
+            event.preventDefault();     
+            if( loginUsername == '' || loginPassword == '' ){
+            alert('Please fill out all fields!');
+            }
+            else{
+            var js = 
+            '{ "username":"' + loginUsername + 
+            '","password":"' + loginPassword 
+            +'"}';
+            
+            const response = await fetch(BASE_URL + 'api/login',
+            {
+                method: 'POST',
+                headers: new Headers({'Content-Type':'application/json'}),
+                body:js,
+            })
+            .catch((error) => setMessage(error))
+            .finally(() => setLoading(false));
+            var res = JSON.parse(await response.text());
+            setMessage(res.error);
+            if(res.error==''){
+                navigation.navigate('Home', {screen: 'Feed',
+                params: { user: loginUsername }
+            });
         }
     }
-}
+}   
 
 
     return (
@@ -108,7 +111,7 @@ function LoginScreen() {
             >
             <Text> Forgot Password?</Text>
             </TouchableOpacity>
-            <Text> Error: {message}</Text>
+            <Text style= {title.status}> {message}</Text>
 
         </View>
     );
@@ -173,6 +176,7 @@ function LoginScreen() {
         alignItems: 'center',
         justifyContent: 'center',
         fontSize: 18,
+        color: 'red',
     },
 
     input: {

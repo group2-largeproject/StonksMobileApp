@@ -20,6 +20,10 @@ function Register(){
     const[password, setPassword] = useState('');
     const[confirmpassword, setconfirmPassword] = useState('');
 
+    const clickHandler = () => {
+        navigation.navigate('Login');
+    }
+
     const doRegister = async event => 
     {
       event.preventDefault();     
@@ -38,16 +42,20 @@ function Register(){
         '", "lastName":"' + lastname
         +'"}';
         
-        const response = await fetch(BASE_URL + 'api/register',
+        const response = await fetch(BASE_URL + 'register',
         {
             method: 'POST',
             headers: new Headers({'Content-Type':'application/json'}),
             body:js,
         })
         .catch((error) => setMessage(error))
-        var res = JSON.parse(await response.text());
-        setMessage(res.error);
-        navigation.navigate('Login');
+        var res = JSON.parse(response.status);
+        if(res==200){
+            setMessage('Account created successfully! Please log in.');
+        }
+        else(setMessage('Error: ' +res));
+        
+        
     }
 }
 
@@ -104,8 +112,14 @@ function Register(){
             />
             <View style={title.ButtonContainer}>
                 <Button 
-                    title="Login"
+                    title="Register"
                     onPress= {doRegister}
+                />
+            </View>
+            <View style={title.ButtonContainer}>
+                <Button 
+                    title="Back to Login"
+                    onPress= {clickHandler}
                 />
             </View>
 

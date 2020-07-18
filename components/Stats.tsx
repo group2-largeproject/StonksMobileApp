@@ -1,22 +1,24 @@
 import * as React from 'react';
 import react, {Component} from 'react';
 import { useNavigation } from '@react-navigation/native';
-import { LineChart } from 'react-native-chart-kit';
+
 import { StyleSheet, Text, View, Button, TextInput, TouchableOpacity, ImageBackground, Image } from 'react-native';
 
 var _BLUE = '#2196f3';
 var _GRAY = '#303030';
+var _BLUE2 = '#1e88e5';
 
 function Stats({ route, navigation }) {
-    
-  
+
     return (
         <View style={title.container}>
             
             <View style={title.logoffbutton}>
-              <LogButton ScreenName= "Login" />
+              <LogButton ScreenName= "Logoff" />
             </View>
-            <Text style={title.text}>Showing you some statistics </Text>
+
+            <Text>Account information for </Text>
+
         </View>
     );
 }

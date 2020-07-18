@@ -9,52 +9,78 @@ var _GRAY = '#303030';
 
 function Forgotpassword() {
     const[email, setEmail] = useState('');
-    const[error, setError] = useState('');
+    const[username, setuserName] = useState('');
+    const[message, setMessage] = useState('');
+    const navigation = useNavigation();
+    const BASE_URL = 'https://cop4331-large-group2.herokuapp.com/';
+
+    const clickHandler = () => {
+        navigation.navigate('Login');
+    }
+
+    const doRecover = async (event: { preventDefault: () => void; }) => 
+        {
+            event.preventDefault();     
+            if( email == '' ){
+            alert('Please enter a valid email!');
+            }
+            else{
+            var js = 
+            '{ "username":"' + username +
+            '","email":"' + email 
+            +'"}';
+            
+            const response = await fetch(BASE_URL + 'api/forgot',
+            {
+                method: 'POST',
+                headers: new Headers({'Content-Type':'application/json'}),
+                body:js,
+            })
+            .catch((error) => setMessage(error))
+            var res = JSON.parse(response.status);
+            if(res==200){
+                setMessage('Email send, please login again');
+            }
+            else(setMessage('Error: ' +res));
+            }
+    }
 
     return (
         <View style={title.container}>
             <Text style= {title.TextStyle}>Enter your email, </Text>
-            <Text style= {title.TextStyle}>a message will be send to you to recover your password. </Text>
-            
-     
+            <Text style= {title.TextStyle}>a temporary password will be send to your email. </Text>
 
-        <TextInput
-            style={title.input}
-            keyboardType = 'email-address'
-            placeholder='Email'
-            onChangeText={email => setEmail(email)}
-        />
+            <TextInput
+                style={title.input}
+                keyboardType = 'default'
+                placeholder='Username'
+                onChangeText={username => setuserName(username)}
+            />
 
-        <LogButton Screen= "Passwordrecovery"/>
+            <TextInput
+                style={title.input}
+                keyboardType = 'email-address'
+                placeholder='Email'
+                onChangeText={email => setEmail(email)}
+            />
 
+            <View style={title.ButtonContainer}>
+                <Button 
+                    title="Send Link"
+                    onPress= {doRecover}
+                />
+            </View>
+
+            <View style={title.ButtonContainer}>
+                <Button 
+                    title="Back to login"
+                    onPress= {clickHandler}
+                />
+            </View>
+            <Text style= {title.TextStyle}>{message}</Text>
         </View>
 
     );
-
-    function LogButton({Screen}){
-        const navigation = useNavigation();
-        return(
-            <View style={title.ButtonContainer}>
-                <Button 
-                    title= 'Send Link'
-                    onPress={() => {
-                        if(emailcheck(email)){
-                            navigation.navigate(Screen);
-                        }
-                        else(alert('Email Does not exist!'));
-                    }
-                }>
-                </Button>
-            </View>
-        );
-      }
-    
-      function emailcheck(emaildata){
-        if(emaildata =='Test')
-            return 1;
-        else return 0;
-      }
-    
 }
 export default Forgotpassword;
 
@@ -89,7 +115,7 @@ const title = StyleSheet.create({
             color: _BLUE,
             alignContent: 'center',
             fontWeight: 'bold',
-            fontSize: 13,
+            fontSize: 12,
             fontStyle: 'italic',
         },
     })

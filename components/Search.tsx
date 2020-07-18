@@ -79,13 +79,15 @@ export default class Search extends react.Component <{},any> {
                 <LogButton ScreenName= "Login" /> 
               </View>
               <Text style={styles.text}> Search Stocks </Text>
-              <FlatList
-                  data= {this.state.dataSource}
-                  initialNumToRender = {9}
-                  ItemSeparatorComponent = {this.FlatListItemSeparator}
-                  renderItem= {item=> this.renderItem(item)}
-                  keyExtractor= {item=>item.id.toString()}
-              />
+              <View style={styles.listWindow}>
+                <FlatList
+                    data= {this.state.dataSource}
+                    initialNumToRender = {9}
+                    ItemSeparatorComponent = {this.FlatListItemSeparator}
+                    renderItem= {item=> this.renderItem(item)}
+                    keyExtractor= {item=>item.id.toString()}
+                />
+              </View>
             </View>
           )
         }
@@ -117,6 +119,10 @@ export default class Search extends react.Component <{},any> {
       fontSize: 24,
       color: _GRAY,
       
+    },
+    listWindow: {
+      flex: 0,
+      height: 500,
     },
     list:{
       paddingVertical: 4,

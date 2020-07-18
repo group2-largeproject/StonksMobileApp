@@ -16,8 +16,6 @@ const Drawer = createDrawerNavigator();
 const _BLUE = '#2196f3';
 const _GRAY = '#303030';
 
-
-
 function App(){
     return (
       <NavigationContainer>
@@ -52,32 +50,14 @@ function App(){
             
           }}
           />
-
-          <Stack.Screen
-            name="Passwordrecovery"
-            component={Passwordrecovery}
-            options={{title: 'Passwordrecovery',
-            
-          }}
-          />
-
-          <Stack.Screen
-            name="Passwordreset"
-            component={Passwordreset}
-            options={{title: 'Passwordreset',
-            
-          }}
-          />
-
         </Stack.Navigator>
       </NavigationContainer>
     );
   }
 export default App;
 
-
-function HomeScreen() {
-  
+function HomeScreen({route}) {
+  const { user } = route.params;
     return (
     <Drawer.Navigator 
       drawerContentOptions={{
@@ -91,11 +71,13 @@ function HomeScreen() {
       drawerContent={props=><DrawerButton {...props} />}
     >
       <Drawer.Screen name="Feed" component = {Feed} />
-      <Drawer.Screen name="Stats" component = {Stats} />
       <Drawer.Screen name="Search" component = {Search} />
+      
     </Drawer.Navigator>
   );
 }
+
+//<Drawer.Screen name="Stats" component = {Stats} />
 
 function DrawerButton( props ){
   const navigation = useNavigation();
@@ -103,8 +85,8 @@ function DrawerButton( props ){
     <DrawerContentScrollView {...props}>
       <DrawerItemList{...props}/>
         <DrawerItem 
-          label = "" 
-          onPress={()=> alert('some command')}
+          label = "button" 
+          onPress={()=> alert('doink!')}
         />
     </DrawerContentScrollView>
   )

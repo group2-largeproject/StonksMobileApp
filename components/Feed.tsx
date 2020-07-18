@@ -1,7 +1,16 @@
 import * as React from 'react';
 import react, {Component} from 'react';
-import { useNavigation } from '@react-navigation/native';
-import { LineChart } from 'react-native-chart-kit';
+import { useNavigation, useRoute  } from '@react-navigation/native';
+import{ useState, useEffect } from 'react';
+import {
+  LineChart,
+  BarChart,
+  PieChart,
+  ProgressChart,
+  ContributionGraph,
+  StackedBarChart
+} from "react-native-chart-kit";
+
 import { 
   StyleSheet, 
   FlatList, 
@@ -12,100 +21,120 @@ import {
   TouchableOpacity, 
   ActivityIndicator,
  } from 'react-native';
+import { BorderlessButton } from 'react-native-gesture-handler';
 
 var _BLUE = '#2196f3';
 var _BLUE2 = '#1e88e5';
 var _GRAY = '#303030';
+var _GRAY2 = '#003030';
 
-export default class Feed extends react.Component <{},any> {
+const Item = ({ title, year}) => (
+  <View style={styles.list}>
+    <Text style={styles.lightText}>{title}</Text>
+    <Text style={styles.lightText}>{year}</Text>
+  </View>
+);
+
+
+export default function Feed({route, navigation}){
+  const {user} = route.params;
+  const [data, setData] = useState(['i']);
+  const [isLoading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch('https://reactnative.dev/movies.json')
+      .then((response) => response.json())
+      .then((json) => setData(json.movies))
+      .catch((error) => console.error(error))
+      .finally(() => setLoading(false));
+  }, []);
+
+  const renderItem = ({ item }) => (
+    <Item title={item.title}
+           year={item.releaseYear} />
+  );
+  
+  
+    return(
+      
+    <View style={styles.container}>
+      
+      <View style={styles.logoffbutton}>
+        <LogButton ScreenName= "Login" /> 
+      </View>
+      <Text style={styles.text}>Stats for user {user}</Text>
+      {isLoading ? <ActivityIndicator/> : (
+        <LineChart
+          data={{
+            labels: [
+              data[0].title,
+              'two',
+              'three',
+              'four',
+              'five',
+            ],
+            datasets: [
+              {
+                data: [
+                  1,
+                  2,
+                  3,
+                  4,
+                  5
+                ]
+              }
+            ]
+          }}
+          width={350} // from react-native
+          height={200}
+          yAxisLabel=""
+          yAxisSuffix=""
+          yAxisInterval={1} // optional, defaults to 1
+          chartConfig={{
+            backgroundColor: _GRAY,
+            backgroundGradientFrom: _GRAY,
+            backgroundGradientTo: _GRAY,
+            decimalPlaces: 0, // optional, defaults to 2dp
+            color: (opacity = 1) => _BLUE,
+            labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+            style: {
+              borderRadius: 16
+            },
+            propsForDots: {
+              r: '0',
+              strokeWidth: "2",
+              stroke: _BLUE2
+            }
+          }}
+          bezier
+          style={{
+            marginVertical: 8,
+            borderRadius: 16
+          }}
+        />
+      )}
+      <Text style={styles.text2}> My Stocks </Text>
+      <View style={styles.listWindow}>
+      
+        <View style={styles.listWindow}>
+        {isLoading ? <ActivityIndicator/> : (
+          <FlatList
+              data={data}
+              keyExtractor={item => item.id}
+              renderItem={renderItem}
+            />
+        )}
+        </View>
+      </View>
+    </View>
     
-  static navigationOptions = ({ navigation }) => {
-    return {
-      title: "Source Listing",
-      headerStyle: {backgroundColor: "#fff"},
-      headerTitleStyle: {textAlign: "center",flex: 1}
-     };
-    };
-
-    line = {
-      labels: ['January', 'February', 'March', 'April', 'May', 'June'],
-      datasets: [
-        {
-          data: [20, 45, 28, 80, 99, 43],
-          strokeWidth: 2, // optional
-        },
-      ],
-    };
-
-    constructor(props) {
-      super(props);
-      this.state = {
-        loading: true,
-        dataSource:[]
-       };
-     }
-
-     componentDidMount(){
-      fetch("https://reactnative.dev/movies.json")
-      .then(response => response.json())
-      .then((responseJson)=> {
-        this.setState({
-         loading: false,
-         dataSource: responseJson
-        })
-      })
-      .catch(error=>console.log(error)) //to catch the errors if any
-      }
-
-      FlatListItemSeparator = () => {
-        return (
-          <View 
-            style={{
-              height: .5,
-              width:"100%",
-              backgroundColor:"rgba(0,0,0,0.5)",
-            }}
-          />
-        );
-      }
-
-      renderItem=(data)=>
-        <TouchableOpacity style={styles.list}>
-          <Text style={styles.lightText}>{data.item.title}</Text>
-          <Text style={styles.lightText}>{data.item.releaseYear}</Text>
-        </TouchableOpacity>
-        render(){
-          if(this.state.loading){
-            return( 
-              <View style={styles.loader}> 
-                <ActivityIndicator size="large" color="#0c9"/>
-              </View>
-          )}
-            return(
-            <View style={styles.container}>
-              
-              <View style={styles.logoffbutton}>
-                <LogButton ScreenName= "Login" /> 
-              </View>
-              <Text style={styles.text}> Stocks Added </Text>
-              <FlatList
-                  data= {this.state.dataSource.movies.slice(0,3)}
-                  ItemSeparatorComponent = {this.FlatListItemSeparator}
-                  renderItem= {item=> this.renderItem(item)}
-                  keyExtractor= {item=>item.id.toString()}
-              />
-              <Text style={styles.text2}> Stocks Added </Text>
-
-                
-            </View>
-            
-          )
-        }
-      }
+  )
+}
+        
   const styles = StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: _BLUE,
+      backgroundColor: _GRAY,
       paddingTop: 0,
     },
     loader:{
@@ -117,6 +146,7 @@ export default class Feed extends react.Component <{},any> {
     logoffbutton: {
       flex: 0,
       paddingTop: 25,
+      paddingBottom: 10,
       color: _GRAY,
       paddingLeft: 5,
       alignItems: 'flex-start',
@@ -127,15 +157,16 @@ export default class Feed extends react.Component <{},any> {
       flex: 0,
       position: 'absolute',
       fontSize: 24,
-      color: _GRAY,
+      color: _BLUE2,
       
     },
     text2:{
-      paddingBottom: 300,
+      flex: 0,
+      paddingBottom: 10,
+      paddingTop: 10,
       position: 'relative',
-      flex: 1,
       fontSize: 24,
-      color: _GRAY,
+      color: _BLUE2,
       
     },
     list:{
@@ -144,11 +175,18 @@ export default class Feed extends react.Component <{},any> {
       flexGrow: 0,
       height: 60,
       width: 350,
+      alignItems: 'flex-start',
       backgroundColor: _BLUE2
     },
+    listWindow: {
+      flex: 0,
+      paddingTop: 0,
+      height: 300,
+    },
     lightText:{
-      fontSize: 12,
-      alignItems: 'flex-start',
+      fontSize: 14,
+      alignItems: 'center',
+      color: _GRAY,
     }
   });
 
