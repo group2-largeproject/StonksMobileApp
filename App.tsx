@@ -1,15 +1,12 @@
 import * as React from 'react';
 import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import {createDrawerNavigator, DrawerItemList, DrawerItem, DrawerContentScrollView} from '@react-navigation/drawer';
+import { createDrawerNavigator, DrawerItemList, DrawerItem, DrawerContentScrollView} from '@react-navigation/drawer';
 import Login from './components/Login';
 import Feed from './components/Feed';
-import Stats from './components/Stats';
 import Search from './components/Search';
 import Register from './components/Register';
 import Forgotpassword from './components/Forgotpassword';
-import Passwordrecovery from './components/Passwordrecovery';
-import Passwordreset from './components/Passwordreset';
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -27,14 +24,6 @@ function App(){
             component={Login}
           />
 
-          <Stack.Screen 
-            name="Home" 
-            component={HomeScreen} 
-            options={{title: 'Logoff',
-            gestureEnabled:false
-            }}
-          />
-
           <Stack.Screen
             name="Register"
             component={Register}
@@ -50,6 +39,15 @@ function App(){
             
           }}
           />
+
+          <Stack.Screen 
+            name="Home" 
+            component={HomeScreen} 
+            options={{title: 'Logoff',
+            gestureEnabled:false
+            }}
+          />
+          
         </Stack.Navigator>
       </NavigationContainer>
     );
@@ -58,6 +56,7 @@ export default App;
 
 function HomeScreen({route}) {
   const { user } = route.params;
+  
     return (
     <Drawer.Navigator 
       drawerContentOptions={{
@@ -70,23 +69,30 @@ function HomeScreen({route}) {
       }}
       drawerContent={props=><DrawerButton {...props} />}
     >
-      <Drawer.Screen name="Feed" component = {Feed} />
-      <Drawer.Screen name="Search" component = {Search} />
+      <Drawer.Screen 
+        name="Feed" 
+        component = {Feed}  
+      />
+      <Drawer.Screen 
+        name="Search" 
+        component = {Search} 
+      />
       
     </Drawer.Navigator>
   );
 }
 
+
 //<Drawer.Screen name="Stats" component = {Stats} />
 
-function DrawerButton( props ){
+function DrawerButton( props, ScreenName ){
   const navigation = useNavigation();
   return (
     <DrawerContentScrollView {...props}>
       <DrawerItemList{...props}/>
         <DrawerItem 
           label = "button" 
-          onPress={()=> alert('doink!')}
+          onPress={()=> alert('')}
         />
     </DrawerContentScrollView>
   )

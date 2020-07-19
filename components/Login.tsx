@@ -4,42 +4,61 @@ import { useRef } from 'react';
 import{ useState } from 'react';
 import { StyleSheet, ActivityIndicator, Text, View, Button, TextInput, TouchableOpacity, ImageBackground, Image } from 'react-native';
 import { State } from 'react-native-gesture-handler';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, NavigationContainer } from '@react-navigation/native';
 
 var _BLUE = '#2196f3';
 var _GRAY = '#303030';
+const BASE_URL = 'https://cop4331-large-group2.herokuapp.com/';
 //login: Malaniz ps: admin123
 
-function LoginScreen({route}) {
+export default class LoginScreen extends React.Component <{},any>{
   
-    const[message, setMessage] = useState('');
-    const navigation = useNavigation();
-    const BASE_URL = 'https://cop4331-large-group2.herokuapp.com/';
-    const[isLoading, setLoading] = useState(false);
-    const[loginUsername, setUsername] = useState('i');
-    const[loginPassword, setPassword] = useState('i');
+    static navigationOptions = { title: 'Login' } 
+    state: { 
+        loginPassword: string, 
+        loginUsername: string,
+        message: string,
+        error: string,
+        isloading: boolean,
+        ready: boolean,
+        data: []
+      } 
+      
+    constructor(props: Props) { 
+        super(props); 
+        this.state = { 
+            isloading: true,
+            loginUsername: '',
+            loginPassword: '', 
+            message: '',
+            error: '',
+            ready: false,
+            data: []
+        };
+       
+    } 
 
-    const clickHandler = () => {
-            //navigation.navigate('Register');
-            navigation.navigate('Register');
+    handleUserChange = (data) => {
+        this.setState({loginUsername: data})
+    }
+    handlePasswordChange = (data) => {
+        this.setState({loginPassword: data})
+    }
+    handleReadystate = () => {
+        this.setState({ready: true})
+        console.log('ready state changed');
+    }
+
+    doLogin = async event => 
+    {
+        event.preventDefault();     
+        if( this.state.loginUsername == '' || this.state.loginPassword == '' ){
+        alert('Please fill out all fields!');
         }
-
-    const clickHandler2 = () => {
-            //navigation.navigate('Forgotpassword');
-            navigation.navigate('Home');
-        }
-
-    
-    const doLogin = async event => 
-        {
-            event.preventDefault();     
-            if( loginUsername == '' || loginPassword == '' ){
-            alert('Please fill out all fields!');
-            }
-            else{
+        else{
             var js = 
-            '{ "username":"' + loginUsername + 
-            '","password":"' + loginPassword 
+            '{ "username":"' + this.state.loginUsername + 
+            '","password":"' + this.state.loginPassword 
             +'"}';
             
             const response = await fetch(BASE_URL + 'api/login',
@@ -48,73 +67,76 @@ function LoginScreen({route}) {
                 headers: new Headers({'Content-Type':'application/json'}),
                 body:js,
             })
-            .catch((error) => setMessage(error))
-            .finally(() => setLoading(false));
+            .catch((error) => this.setState({error: error}))
+            .finally(() => this.setState({setLoading:false}));
             var res = JSON.parse(await response.text());
-            setMessage(res.error);
+            this.setState({message: res.error})
             if(res.error==''){
-                navigation.navigate('Home', {screen: 'Feed',
-                params: { user: loginUsername }
-            });
+                {this.props.navigation.navigate('Home', {screen: 'Feed'})}
+            }
         }
-    }
-}   
+    }   
 
+    render() {
+        const { data} = this.state;
 
-    return (
-        <View style={title.container}>
+        return (
+            <View style={title.container}>
 
-            <Image 
-                source={require('./StonksMainLogo.png')} 
-                style={title.image}
-            >
-                
-            </Image>
+                <Image 
+                    source={require('./StonksMainLogo.png')} 
+                    style={title.image}
+                >
+                    
+                </Image>
 
-            <StatusBar style = "auto"/>
+                <StatusBar style = "auto"/>
 
-            <TextInput
-                
-                style={title.input}
-                keyboardType = 'email-address'
-                placeholder='e.g John Doe'
-                onChangeText = {loginUsername => setUsername(loginUsername)}
-            />
-
-            <TextInput
-                clearTextOnFocus={true}
-                style={title.input}
-                keyboardType = 'default'
-                placeholder='e.g PassWord'
-                textContentType={'password'}
-                secureTextEntry
-                onChangeText={loginPassword => setPassword(loginPassword)}
-            />
-
-            <View style={title.ButtonContainer}>
-                <Button 
-                    title="Login"
-                    onPress= {doLogin}
+                <TextInput
+                    
+                    style={title.input}
+                    keyboardType = 'email-address'
+                    placeholder='e.g John Doe'
+                    value = {this.state.loginUsername}
+                    onChangeText = { this.handleUserChange }
                 />
+
+                <TextInput
+                    clearTextOnFocus={true}
+                    style={title.input}
+                    keyboardType = 'default'
+                    placeholder='e.g PassWord'
+                    textContentType={'password'}
+                    secureTextEntry={true}
+                    value = {this.state.loginPassword}
+                    onChangeText = { this.handlePasswordChange }
+                />
+
+                <View style={title.ButtonContainer}>
+                    <Button 
+                        title="Login"
+                        onPress = {this.doLogin}
+                    />
+                </View>
+
+                <TouchableOpacity style ={
+                    title.registerButton}
+                    onPress = { ()=> {this.props.navigation.navigate('Register')}}
+                >
+                <Text> No Account? Register here! </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity style ={
+                    title.ForgotButton}
+                    onPress = { ()=> {this.props.navigation.navigate('Forgotpassword')}}
+                >
+                <Text> Forgot Password?</Text>
+                </TouchableOpacity>
+                <Text style= {title.status}> Error: {this.state.message}  </Text>
+
             </View>
-
-            <TouchableOpacity style ={
-                title.registerButton}
-                onPress={clickHandler}
-            >
-            <Text> No Account? Register here!</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity style ={
-                title.ForgotButton}
-                onPress={clickHandler2}
-            >
-            <Text> Forgot Password?</Text>
-            </TouchableOpacity>
-            <Text style= {title.status}> {message}</Text>
-
-        </View>
-    );
+        );
+    }
 }
   const title = StyleSheet.create({
     container: {
@@ -189,4 +211,30 @@ function LoginScreen({route}) {
     }
 });
 
-export default LoginScreen;
+   const doLogin = async event => 
+        {
+            event.preventDefault();     
+            if( loginUsername == '' || loginPassword == '' ){
+            alert('Please fill out all fields!');
+            }
+            else{
+		    var js = 
+		    '{ "username":"' + loginUsername + 
+		    '","password":"' + loginPassword 
+		    +'"}';
+		    
+		    const response = await fetch(BASE_URL + 'api/login',
+		    {
+		        method: 'POST',
+		        headers: new Headers({'Content-Type':'application/json'}),
+		        body:js,
+		    })
+		    .catch((error) => setMessage(error))
+		    .finally(() => setLoading(false));
+		    var res = JSON.parse(await response.text());
+		    setMessage(res.error);
+		    if(res.error==''){
+		        navigation.navigate('Feed', {Username: loginUsername});
+		    }
+        	}
+	}   
