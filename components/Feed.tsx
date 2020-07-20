@@ -1,7 +1,7 @@
 import * as React from 'react';
 import react, {Component} from 'react';
 import AsyncStorage from '@react-native-community/async-storage';
-import { useNavigation, useRoute  } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';  
 import{ useState } from 'react';
 import {
   LineChart,
@@ -49,19 +49,19 @@ interface Props {
 }
 
 export default class Feed extends react.Component <{},any> {
-
+    static navigationOptions = { title: 'Feed' } 
     constructor(props) {
       super(props);
       this.state = {
         username: '',
         message: '',
         loading: true,
+        isFetching: false,
         dataStocks:[],
         dataDates: [],
         dataValues: [],
-        fullData: []
+        chartData: []
        };
-
      }
 
     handleUserChange = async () => {
@@ -90,21 +90,21 @@ export default class Feed extends react.Component <{},any> {
       }
       */
 
-      async componentDidMount(){
-       this.handleUserChange();
-      }
-      
       setDate = () => {
         var date = new Date();
         return(date.getMonth()+1 + '/' + date.getDate() + '/' + date.getFullYear())
+      }  
+
+      async componentDidMount(){
+       this.handleUserChange();
+
       }
 
+      
       async componentDidUpdate(prevProps, prevState)
       {
         if(this.state.username !== prevState.username){
-        
-          console.log('user is: ' + this.state.username)
-          
+          console.log('user is: ' + this.state.username);
           var js = 
           '{"username":"' + this.state.username
             +'"}';
@@ -121,24 +121,23 @@ export default class Feed extends react.Component <{},any> {
               dataStocks: res.stocks,
               dataDates: res.dates,
               dataValues: res.values,
-              fullData: [...this.state.dataStocks,...this.state.dataValues, ...this.state.dataDates]
-              })
-            
+  
+            })
+
             if( res.error !=  '' )
               {
                   console.log(this.state.username + ': ' + res.error);
                   //returns error user doesnt exist, and the rest of data becomes undefined
               }
-            else{
-              
-            }
-            }
-            catch(e){
-              console.log(e.toString());
-            }
           }
+          catch(e){
+            console.log(e.toString());
+          }
+        }
       }
-
+          
+        
+        
    
       Item = ({ title }) => (
         <View style={styles.item}>
@@ -163,7 +162,7 @@ export default class Feed extends react.Component <{},any> {
       </TouchableOpacity>
 
       render(){
-      
+  
         if(this.state.loading){
           return( 
             <View style={styles.loader}> 
@@ -178,23 +177,23 @@ export default class Feed extends react.Component <{},any> {
             <View style={styles.logoffbutton}>
               <LogButton ScreenName= "Login" /> 
             </View>
-            <Text style={styles.text}>welcome, {this.state.username} </Text>
+            <Text style={styles.text}>Welcome, {this.state.username} </Text>
             
             <LineChart
               data={{
                 labels: [
-                  this.state.dataDates[0],
-                  this.state.dataDates[1],
-                  this.state.dataDates[2],
-                  this.state.dataDates[3],
+                  this.state.dataDates[this.state.dataDates.length-4],
+                  this.state.dataDates[this.state.dataDates.length-3],
+                  this.state.dataDates[this.state.dataDates.length-2],
+                  this.state.dataDates[this.state.dataDates.length-1],
                 ],
                 datasets: [
                   {
                     data: [ 
-                      this.state.dataValues[0],
-                      this.state.dataValues[1],
-                      this.state.dataValues[2],
-                      this.state.dataValues[3],
+                      this.state.dataValues[this.state.dataDates.length-4],
+                      this.state.dataValues[this.state.dataDates.length-3],
+                      this.state.dataValues[this.state.dataDates.length-2],
+                      this.state.dataValues[this.state.dataDates.length-1],
                     ]
                   }
                 ]
@@ -226,7 +225,8 @@ export default class Feed extends react.Component <{},any> {
                 borderRadius: 16
               }}
             />
-            <Text style={styles.text2}> My Stocks as of {this.setDate()} </Text>
+            <Text style={styles.text2}> Stock profit of {this.state.dataValues[this.state.dataValues.length-1]} as of:</Text>
+            <Text style={styles.text2}> {this.setDate()} </Text>
             <View style={styles.listWindow}>
                 <FlatList
                     data= {this.state.dataStocks}
@@ -275,9 +275,9 @@ export default class Feed extends react.Component <{},any> {
     },
     text2:{
       flex: 0,
-      paddingBottom: 10,
-      paddingTop: 10,
-      position: 'relative',
+      paddingBottom: 2,
+      paddingTop: 0,
+      alignSelf: 'center',
       fontSize: 24,
       color: _BLUE2,
       

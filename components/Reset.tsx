@@ -7,9 +7,10 @@ var _BLUE = '#2196f3';
 var _GRAY = '#303030';
 
 
-function Forgotpassword() {
+function Reset() {
     const[email, setEmail] = useState('');
-    const[username, setuserName] = useState('');
+    const[password, setPassword] = useState('');
+    const[Cpassword, setCPassword] = useState('');
     const[message, setMessage] = useState('');
     const navigation = useNavigation();
     const BASE_URL = 'https://cop4331-large-group2.herokuapp.com/';
@@ -18,56 +19,68 @@ function Forgotpassword() {
         navigation.navigate('Login');
     }
 
-    const doRecover = async (event: { preventDefault: () => void; }) => 
+    const doUpdate = async (event: { preventDefault: () => void; }) => 
         {
             event.preventDefault();     
-            if( email == '' ){
-            alert('Please enter a valid email!');
+            if( email == '' || password =='' || Cpassword == '' ){
+            alert('Please enter fill all fields!');
+            }
+            else if(password!=Cpassword){
+                alert('Passwords do not match!')
             }
             else{
-            var js = 
-            '{ "username":"' + username +
-            '","email":"' + email 
-            +'"}';
-            
-            const response = await fetch(BASE_URL + 'api/forgot',
-            {
-                method: 'POST',
-                headers: new Headers({'Content-Type':'application/json'}),
-                body:js,
-            })
-            .catch((error) => setMessage(error))
-            var res = JSON.parse(response.status);
-            if(res==200){
-                setMessage('A link has been send with your new password!');
+                var js = 
+                '{ "email":"' + email +
+                '","password":"' + password 
+                +'"}';
+                
+                const response = await fetch(BASE_URL + 'api/reset',
+                {
+                    method: 'POST',
+                    headers: new Headers({'Content-Type':'application/json'}),
+                    body:js,
+                })
+                .catch((error) => setMessage(error))
+                var res = JSON.parse(await response.text());
+                if(res.error== ''){
+                    setMessage('Password changed successfully!')
+                }
+                else(setMessage('Error: ' +res.error));
+                }
             }
-            else(setMessage('Error: ' +res));
-            }
-    }
 
     return (
         <View style={title.container}>
-            <Text style= {title.TextStyle}>Enter your email, </Text>
+            <Text style= {title.TextStyle}> Enter your email to reset password </Text>
             <Text style= {title.TextStyle}>a temporary password will be send to your email. </Text>
 
             <TextInput
                 style={title.input}
-                keyboardType = 'default'
-                placeholder='Username'
-                onChangeText={username => setuserName(username)}
+                keyboardType = 'email-address'
+                placeholder='Enter email'
+                onChangeText={email => setEmail(email)}
             />
 
             <TextInput
                 style={title.input}
-                keyboardType = 'email-address'
-                placeholder='Email'
-                onChangeText={email => setEmail(email)}
+                keyboardType = 'default'
+                placeholder='Enter Password'
+                secureTextEntry
+                onChangeText={password => setPassword(password)}
+            />
+
+            <TextInput
+                style={title.input}
+                keyboardType = 'default'
+                placeholder='confirm Password'
+                secureTextEntry
+                onChangeText={Cpassword => setCPassword(Cpassword)}
             />
 
             <View style={title.ButtonContainer}>
                 <Button 
-                    title="Send Link"
-                    onPress= {doRecover}
+                    title="Update Password"
+                    onPress= {doUpdate}
                 />
             </View>
 
@@ -82,7 +95,7 @@ function Forgotpassword() {
 
     );
 }
-export default Forgotpassword;
+export default Reset;
 
 
 const title = StyleSheet.create({

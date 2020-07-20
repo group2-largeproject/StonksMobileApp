@@ -8,6 +8,16 @@ import { StyleSheet, Text, View, Button, TextInput, TouchableOpacity, ImageBackg
 var _BLUE = '#2196f3';
 var _GRAY = '#303030';
 
+function validateEmail(inputText){
+	var mailformat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+	if(inputText.match(mailformat)){
+	    return true;
+	}
+	else{
+	    return false;
+    }
+}
+
 function Register(){
 
     const BASE_URL = 'https://cop4331-large-group2.herokuapp.com/';
@@ -26,38 +36,43 @@ function Register(){
 
     const doRegister = async event => 
     {
-      event.preventDefault();     
-      if( username == '' || password == '' ){
-        alert('Please fill required fields!');
-      }
-      else if(confirmpassword!==password){
-        alert('passwords do not match!');
-      }
-      else{
-        var js = 
-        '{ "username":"' + username + 
-        '","password":"' + password +
-        '", "email":"' +  email +
-        '", "firstName":"' + firstname +
-        '", "lastName":"' + lastname
-        +'"}';
-        
-        const response = await fetch(BASE_URL + 'register',
-        {
-            method: 'POST',
-            headers: new Headers({'Content-Type':'application/json'}),
-            body:js,
-        })
-        .catch((error) => setMessage(error))
-        var res = JSON.parse(response.status);
-        if(res==200){
-            setMessage('Account created successfully! Please log in.');
+        event.preventDefault();     
+        if( username == '' || password == '' || firstname == '' || lastname== '' || email=='' ){
+            setMessage('Please fill all fields!');
         }
-        else(setMessage('Error: ' +res));
-        
-        
+        else if(password.length<6){
+            setMessage('Password must be longer than 8 digits!')
+        }
+        else if(confirmpassword!==password){
+            setMessage('passwords do not match!');
+        }
+        else if(!validateEmail(email)){
+            setMessage('Enter a valid Email!');
+        }
+
+        else{
+            var js = 
+            '{ "username":"' + username + 
+            '","password":"' + password +
+            '", "email":"' +  email +
+            '", "firstName":"' + firstname +
+            '", "lastName":"' + lastname
+            +'"}';
+            
+            const response = await fetch(BASE_URL + 'register',
+            {
+                method: 'POST',
+                headers: new Headers({'Content-Type':'application/json'}),
+                body:js,
+            })
+            
+            if(response.status ==200 ) {
+                setMessage('Email send to' + email + 'Please check you inbox to sign in');
+            }
+            else(setMessage('Errors: ' + response.statusText));
+        }
     }
-}
+
 
     return (
         <View style={title.container}>
@@ -95,7 +110,7 @@ function Register(){
 
             <TextInput
                 style={title.input}
-                keyboardType = 'visible-password'
+                keyboardType = 'default'
                 placeholder='Password'
                 textContentType='password'
                 secureTextEntry
@@ -104,7 +119,7 @@ function Register(){
 
             <TextInput
                 style={title.input}
-                keyboardType = 'visible-password'
+                keyboardType = 'default'
                 placeholder='Confirm Password'
                 textContentType='password'
                 secureTextEntry
@@ -124,11 +139,11 @@ function Register(){
             </View>
 
             <Text 
-                style={title.titleCard}>{message}
+                style={title.message}>{message}
             </Text>
         </View>
-    );
-}
+        );
+    }
 export default Register;
 
 const title = StyleSheet.create({
@@ -155,6 +170,12 @@ const title = StyleSheet.create({
             fontStyle: 'italic',
         },
     
+        message: {
+            color: 'red',
+            fontWeight: 'bold',
+            fontSize: 20,
+            fontStyle: 'italic',
+        },
 
         ButtonContainer: {
             marginTop: 0,

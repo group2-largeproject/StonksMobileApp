@@ -1,8 +1,9 @@
 import * as React from 'react';
 import react, {Component} from 'react';
 import { useNavigation } from '@react-navigation/native';
+import { useIsFocused } from '@react-navigation/native';
 import AsyncStorage from '@react-native-community/async-storage';
-import { StyleSheet, Text, View, Button, TextInput, TouchableOpacity, ImageBackground, Image } from 'react-native';
+import { StyleSheet, Text, View, Button, TextInput, TouchableOpacity, ImageBackground, Image, Keyboard } from 'react-native';
 
 var _BLUE = '#2196f3';
 var _GRAY = '#303030';
@@ -17,7 +18,7 @@ export default class AddStock extends React.Component <{},any>{
       username: '',
       stock: '',
      };
-   }
+  }
 
   handleUserChange = async () => {
     try {
@@ -31,8 +32,10 @@ export default class AddStock extends React.Component <{},any>{
   }
 
   componentDidMount(){
+    
     this.handleUserChange();
   }
+
   handleStockChange = (data) => {
     this.setState({stock: data})
   }
@@ -55,9 +58,14 @@ export default class AddStock extends React.Component <{},any>{
         var res = JSON.parse(await response.text());
         this.setState({message: res.error})
         if(res.error==''){
-            alert('Stock added!');
+          Keyboard.dismiss();
+          this.handleStockChange('');
+          this.props.navigation.navigate('Feed');
         }
-        else(console.log(this.state.message));
+        else{
+          alert('Stock not found!')
+          console.log(this.state.message)
+        }
     }
 
     deleteStock = async event => 
@@ -83,9 +91,14 @@ export default class AddStock extends React.Component <{},any>{
             var res = JSON.parse(await response.text());
             this.setState({message: res.error})
             if(res.error==''){
-                alert('Stock removed!');
+                Keyboard.dismiss();
+                this.handleStockChange('');
+                this.props.navigation.navigate('Feed');
             }
-            else(console.log('Delete Err for: ' + this.state.username + ' ' + this.state.message));
+            else{
+              console.log(this.state.message)
+              alert('Stock not found!')
+            }
     }
   }
 

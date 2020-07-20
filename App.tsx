@@ -4,7 +4,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { createDrawerNavigator, DrawerItemList, DrawerItem, DrawerContentScrollView} from '@react-navigation/drawer';
 import Login from './components/Login';
 import Feed from './components/Feed';
-import Search from './components/Search';
+import Reset from './components/Reset';
 import AddStock from './components/AddStock';
 import Register from './components/Register';
 import Forgotpassword from './components/Forgotpassword';
@@ -41,6 +41,7 @@ function App(){
           }}
           />
 
+      
           <Stack.Screen 
             name="Home" 
             component={HomeScreen} 
@@ -76,8 +77,13 @@ function HomeScreen({route}) {
       />
 
       <Drawer.Screen 
-        name="AddStock" 
+        name="Manage" 
         component = {AddStock} 
+      />
+
+      <Drawer.Screen 
+        name="Account" 
+        component = {Reset} 
       />
 
     </Drawer.Navigator>

@@ -83,6 +83,7 @@ export default class LoginScreen extends React.Component <{},any>{
             this.setState({message: res.error})
             if(res.error==''){
                 storeData(this.state.loginUsername);
+                console.log(res.email);
                 {this.props.navigation.navigate('Home', {screen: 'Feed'})}
             }
         }
@@ -143,7 +144,7 @@ export default class LoginScreen extends React.Component <{},any>{
                 >
                 <Text> Forgot Password?</Text>
                 </TouchableOpacity>
-                <Text style= {title.status}> Error: {this.state.message}  </Text>
+                <Text style= {title.status}> {this.state.message}  </Text>
 
             </View>
         );
