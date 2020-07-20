@@ -1,7 +1,10 @@
 import * as React from 'react';
 import react, {Component} from 'react';
 import { StatusBar } from 'expo-status-bar';
+import { SearchBar } from 'react-native-elements';
+import AsyncStorage from '@react-native-community/async-storage';
 import { useNavigation } from '@react-navigation/native';
+
 import { 
   StyleSheet, 
   FlatList, 
@@ -18,34 +21,82 @@ var _BLUE2 = '#1e88e5';
 var _GRAY = '#303030';
 
 export default class Search extends react.Component <{},any> {
-    
-  static navigationOptions = ({ navigation }) => {
-    return {
-      title: "Source Listing",
-      headerStyle: {backgroundColor: "#fff"},
-      headerTitleStyle: {textAlign: "center",flex: 1}
-     };
-    };
+  arrayholder: never[];
 
     constructor(props) {
       super(props);
       this.state = {
         loading: true,
+        search: '',
+        username: '',
         dataSource:[]
        };
+       this.arrayholder = [];
      }
 
+   
+
+     handleUserChange = async () => {
+      try {
+        this.setState({ username: await AsyncStorage.getItem('@user')})
+        if(this.state.username !== null) {
+          console.log('found: ' + this.state.username)
+        }
+      } catch(e) {
+        console.log(e);
+      }
+    }  
+
+    renderSeparator = () => {
+      return (
+        <View
+          style={{
+            height: 1,
+            width: '86%',
+            backgroundColor: '#CED0CE',
+            marginLeft: '14%',
+          }}
+        />
+      );
+    };
+
+    handleSearchChange = (data) => {
+      this.setState({search: data})
+    }
+
+      //https://jsonplaceholder.typicode.com/users
      componentDidMount(){
-      fetch("https://jsonplaceholder.typicode.com/users")
-      .then(response => response.json())
-      .then((responseJson)=> {
+      this.handleUserChange();
+      fetch("https://dumbstockapi.com/stock?exchanges=NYSE")
+      .then(res => res.json())
+      .then((res)=> {
         this.setState({
          loading: false,
-         dataSource: responseJson
+         dataSource: res
         })
+        this.arrayholder = res.responseJson;
       })
       .catch(error=>console.log(error)) //to catch the errors if any
       }
+
+     
+
+      searchFilterFunction = text => {
+        this.setState({
+          value: text,
+        });
+    
+        const newData = this.arrayholder.filter(item => {
+          const itemData = `${item.ticker.toUpperCase()} ${item.name.toUpperCase()}`;
+          const textData = text.toUpperCase();
+    
+          return itemData.indexOf(textData) > -1;
+        });
+        this.setState({
+          data: newData,
+        });
+      };
+    
 
       FlatListItemSeparator = () => {
         return (
@@ -59,12 +110,29 @@ export default class Search extends react.Component <{},any> {
         );
       }
 
+      renderHeader = () => {
+        return (
+          <SearchBar
+            placeholder="Type Here..."
+            lightTheme
+            round
+            onChangeText={text => this.searchFilterFunction(text)}
+            autoCorrect={false}
+            value={this.state.value}
+          />
+        );
+      };
+
       renderItem=(data)=>
-        <TouchableOpacity style={styles.list}>
-          <Text style={styles.lightText}>{data.item.name}</Text>
-          <Text style={styles.lightText}>{data.item.email}</Text>
-          <Text style={styles.lightText}>{data.item.company.name}</Text>
+        <TouchableOpacity 
+          style={styles.list}
+          onPress = { ()=> {this.props.navigation.navigate('AddStock')}}
+        >
+            <Text style={styles.lightText}>{data.item.name}</Text>
+            <Text style={styles.lightText}>{data.item.ticker}</Text>
+            
         </TouchableOpacity>
+        
         render(){
           if(this.state.loading){
             return( 
@@ -78,14 +146,22 @@ export default class Search extends react.Component <{},any> {
               <View style={styles.logoffbutton}>
                 <LogButton ScreenName= "Login" /> 
               </View>
-              <Text style={styles.text}> Search Stocks </Text>
+              <Text style={styles.text}> Search Stocks for {this.state.username} </Text>
+              <TextInput
+                    
+                    style={styles.input}
+                    keyboardType = 'default'
+                    placeholder='e.g CDAY'
+                    value = {this.state.search}
+                    onChangeText = { this.handleSearchChange }
+                />
               <View style={styles.listWindow}>
                 <FlatList
                     data= {this.state.dataSource}
-                    initialNumToRender = {9}
+                    initialNumToRender = {10}
                     ItemSeparatorComponent = {this.FlatListItemSeparator}
                     renderItem= {item=> this.renderItem(item)}
-                    keyExtractor= {item=>item.id.toString()}
+                    keyExtractor= {item=>item.ticker.toString()}
                 />
               </View>
             </View>
@@ -98,6 +174,14 @@ export default class Search extends react.Component <{},any> {
       backgroundColor: _BLUE,
       paddingTop: 0,
     },
+    input: {
+      borderWidth: 1,
+      width: 250,
+      borderColor: _GRAY,
+      backgroundColor: 'white',
+      padding: 8,
+      margin: 10,
+  },
     loader:{
       flex: 1,
       justifyContent: "center",
@@ -116,7 +200,7 @@ export default class Search extends react.Component <{},any> {
       paddingTop: 25,
       flex: 0,
       position: 'absolute',
-      fontSize: 24,
+      fontSize: 18,
       color: _GRAY,
       
     },

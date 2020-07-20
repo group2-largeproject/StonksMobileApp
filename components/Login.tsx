@@ -2,6 +2,7 @@ import * as React from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { useRef } from 'react';
 import{ useState } from 'react';
+import AsyncStorage from '@react-native-community/async-storage';
 import { StyleSheet, ActivityIndicator, Text, View, Button, TextInput, TouchableOpacity, ImageBackground, Image } from 'react-native';
 import { State } from 'react-native-gesture-handler';
 import { useNavigation, NavigationContainer } from '@react-navigation/native';
@@ -9,7 +10,16 @@ import { useNavigation, NavigationContainer } from '@react-navigation/native';
 var _BLUE = '#2196f3';
 var _GRAY = '#303030';
 const BASE_URL = 'https://cop4331-large-group2.herokuapp.com/';
-//login: Malaniz ps: admin123
+//login: childishgambino p4ssw0rd1
+
+const storeData = async (value) => {
+    try {
+      await AsyncStorage.setItem('@user', value)
+    } catch (e) {
+      console.log(e);
+    }
+    console.log('Login saved: ' + value);
+  }
 
 export default class LoginScreen extends React.Component <{},any>{
   
@@ -28,8 +38,8 @@ export default class LoginScreen extends React.Component <{},any>{
         super(props); 
         this.state = { 
             isloading: true,
-            loginUsername: '',
-            loginPassword: '', 
+            loginUsername: 'childishgambino',
+            loginPassword: 'p4ssw0rd1', 
             message: '',
             error: '',
             ready: false,
@@ -72,6 +82,7 @@ export default class LoginScreen extends React.Component <{},any>{
             var res = JSON.parse(await response.text());
             this.setState({message: res.error})
             if(res.error==''){
+                storeData(this.state.loginUsername);
                 {this.props.navigation.navigate('Home', {screen: 'Feed'})}
             }
         }
@@ -96,7 +107,7 @@ export default class LoginScreen extends React.Component <{},any>{
                     
                     style={title.input}
                     keyboardType = 'email-address'
-                    placeholder='e.g John Doe'
+                    placeholder='e.g johndoe@mail.com'
                     value = {this.state.loginUsername}
                     onChangeText = { this.handleUserChange }
                 />
@@ -210,31 +221,3 @@ export default class LoginScreen extends React.Component <{},any>{
         margin: 10,
     }
 });
-
-   const doLogin = async event => 
-        {
-            event.preventDefault();     
-            if( loginUsername == '' || loginPassword == '' ){
-            alert('Please fill out all fields!');
-            }
-            else{
-		    var js = 
-		    '{ "username":"' + loginUsername + 
-		    '","password":"' + loginPassword 
-		    +'"}';
-		    
-		    const response = await fetch(BASE_URL + 'api/login',
-		    {
-		        method: 'POST',
-		        headers: new Headers({'Content-Type':'application/json'}),
-		        body:js,
-		    })
-		    .catch((error) => setMessage(error))
-		    .finally(() => setLoading(false));
-		    var res = JSON.parse(await response.text());
-		    setMessage(res.error);
-		    if(res.error==''){
-		        navigation.navigate('Feed', {Username: loginUsername});
-		    }
-        	}
-	}   

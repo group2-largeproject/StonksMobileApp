@@ -1,5 +1,6 @@
 import * as React from 'react';
 import react, {Component} from 'react';
+import AsyncStorage from '@react-native-community/async-storage';
 import { useNavigation, useRoute  } from '@react-navigation/native';
 import{ useState } from 'react';
 import {
@@ -27,16 +28,21 @@ var _BLUE = '#2196f3';
 var _BLUE2 = '#1e88e5';
 var _GRAY = '#303030';
 var _GRAY2 = '#003030';
+const BASE_URL = 'https://cop4331-large-group2.herokuapp.com/';
 
+const getData = async () => {
+  try {
+    const value = await AsyncStorage.getItem('@user')
+    if(value !== null) {
+      console.log('found: ' + value)
+    }
+  } catch(e) {
+    console.log(e);
+  }
+}
 
 interface Props {
   navigation: any
-}
-
-function MyText() {
-  const route = useRoute();
-
-  return <Text>hi</Text>;
 }
 
 export default class Feed extends react.Component <{},any> {
@@ -44,12 +50,26 @@ export default class Feed extends react.Component <{},any> {
     constructor(props) {
       super(props);
       this.state = {
+        username: '',
+        message: '',
         loading: true,
         dataSource:[]
        };
      }
 
+    handleUserChange = async () => {
+      try {
+        this.setState({ username: await AsyncStorage.getItem('@user')})
+        if(this.state.username !== null) {
+          console.log('found: ' + this.state.username)
+        }
+      } catch(e) {
+        console.log(e);
+      }  
+    }
+    /* dummy api
      componentDidMount(){
+      this.handleUserChange();
       fetch("https://reactnative.dev/movies.json")
       .then(response => response.json())
       .then((responseJson)=> {
@@ -59,6 +79,36 @@ export default class Feed extends react.Component <{},any> {
         })
       })
       .catch(error=>console.log(error)) //to catch the errors if any
+      }
+      */
+
+    async componentDidMount() 
+      {
+        this.handleUserChange();
+        var js = 
+        '{"username":"' + this.state.username 
+          +'"}';
+        try{
+          const response = await fetch(BASE_URL + 'api/getData',
+          {
+              method: 'POST',
+              headers: new Headers({'Content-Type':'application/json'}),
+              body:js,
+          })
+          var res = JSON.parse(await response.text());
+          this.setState({
+            loading: false,
+            dataSource: res
+            })
+          if( res.error !=  '' )
+            {
+                console.log(this.state.username + ' ' + res.error);
+                //returns error user doesnt exist, and the rest of data becomes undefined
+            }
+          }
+          catch(e){
+            console.log(e.toString());
+          }
       }
 
       FlatListItemSeparator = () => {
@@ -75,10 +125,12 @@ export default class Feed extends react.Component <{},any> {
 
       renderItem=(data)=>
         <TouchableOpacity style={styles.list}>
-          <Text style={styles.lightText}>{data.item.title}</Text>
-          <Text style={styles.lightText}>{data.item.releaseYear}</Text>
+          <Text style={styles.lightText}>{data.item.values}</Text>
+          <Text style={styles.lightText}>{data.item.stocks}</Text>
         </TouchableOpacity>
         render(){
+
+          
 
           if(this.state.loading){
             return( 
@@ -93,25 +145,25 @@ export default class Feed extends react.Component <{},any> {
               <View style={styles.logoffbutton}>
                 <LogButton ScreenName= "Login" /> 
               </View>
-              <Text style={styles.text}>Stats for</Text>
+              <Text style={styles.text}>welcome, {this.state.username} </Text>
              
               <LineChart
                 data={{
                   labels: [
-                    this.state.dataSource.movies[0].title,
-                    this.state.dataSource.movies[1].title,
-                    this.state.dataSource.movies[2].title,
-                    this.state.dataSource.movies[3].title,
-                    this.state.dataSource.movies[4].title,
+                    this.state.dataSource.dates[0],
+                    //this.state.dataSource.movies[1].title,
+                    //this.state.dataSource.movies[2].title,
+                    //this.state.dataSource.movies[3].title,
+                    //this.state.dataSource.movies[4].title,
                   ],
                   datasets: [
                     {
-                      data: [
-                        this.state.dataSource.movies[0].releaseYear,
-                        this.state.dataSource.movies[1].releaseYear,
-                        this.state.dataSource.movies[2].releaseYear,
-                        this.state.dataSource.movies[3].releaseYear,
-                        this.state.dataSource.movies[4].releaseYear,
+                      data: [1000, 2000, 3000, 
+                        //this.state.dataSource.values[0],
+                        //this.state.dataSource.movies[1].releaseYear,
+                        //this.state.dataSource.movies[2].releaseYear,
+                        //this.state.dataSource.movies[3].releaseYear,
+                        //this.state.dataSource.movies[4].releaseYear,
                       ]
                     }
                   ]
@@ -143,11 +195,11 @@ export default class Feed extends react.Component <{},any> {
                   borderRadius: 16
                 }}
               />
-              <Text style={styles.text2}> My Stocks </Text>
+              <Text style={styles.text2}> My Stocks {this.state.dataSource.stocks[0]}</Text>
+                
               <View style={styles.listWindow}>
                 <FlatList
-                    data= {this.state.dataSource.movies}
-                  
+                    data= {this.state.dataSource.stocks}
                     ItemSeparatorComponent = {this.FlatListItemSeparator}
                     renderItem= {item=> this.renderItem(item)}
                     keyExtractor= {item=>item.id.toString()}
