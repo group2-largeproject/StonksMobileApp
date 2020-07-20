@@ -161,7 +161,7 @@ export default class Search extends react.Component <{},any> {
                     initialNumToRender = {10}
                     ItemSeparatorComponent = {this.FlatListItemSeparator}
                     renderItem= {item=> this.renderItem(item)}
-                    keyExtractor= {item=>item.ticker.toString()}
+                    keyExtractor= {(item, index)=> index.toString()}
                 />
               </View>
             </View>

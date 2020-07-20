@@ -5,6 +5,7 @@ import { createDrawerNavigator, DrawerItemList, DrawerItem, DrawerContentScrollV
 import Login from './components/Login';
 import Feed from './components/Feed';
 import Search from './components/Search';
+import AddStock from './components/AddStock';
 import Register from './components/Register';
 import Forgotpassword from './components/Forgotpassword';
 
@@ -67,17 +68,18 @@ function HomeScreen({route}) {
         backgroundColor: _BLUE,
         width: 150,
       }}
-      drawerContent={props=><DrawerButton {...props} />}
+      
     >
       <Drawer.Screen 
         name="Feed" 
         component = {Feed}  
       />
+
       <Drawer.Screen 
-        name="Search" 
-        component = {Search} 
+        name="AddStock" 
+        component = {AddStock} 
       />
-      
+
     </Drawer.Navigator>
   );
 }

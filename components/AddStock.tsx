@@ -98,7 +98,7 @@ export default class AddStock extends React.Component <{},any>{
                     
                     style={title.input}
                     keyboardType = 'default'
-                    placeholder='e.g CDAY'
+                    placeholder='Search a stock by its key'
                     value = {this.state.stock}
                     onChangeText = { this.handleStockChange }
               />

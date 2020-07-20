@@ -21,8 +21,11 @@ import {
   TextInput, 
   TouchableOpacity, 
   ActivityIndicator,
+  SafeAreaView,
+  SectionList
  } from 'react-native';
 import { BorderlessButton } from 'react-native-gesture-handler';
+import DrawerLayout from 'react-native-gesture-handler/DrawerLayout';
 
 var _BLUE = '#2196f3';
 var _BLUE2 = '#1e88e5';
@@ -53,8 +56,12 @@ export default class Feed extends react.Component <{},any> {
         username: '',
         message: '',
         loading: true,
-        dataSource:[]
+        dataStocks:[],
+        dataDates: [],
+        dataValues: [],
+        fullData: []
        };
+
      }
 
     handleUserChange = async () => {
@@ -65,7 +72,8 @@ export default class Feed extends react.Component <{},any> {
         }
       } catch(e) {
         console.log(e);
-      }  
+      } 
+      return this.state.username; 
     }
     /* dummy api
      componentDidMount(){
@@ -82,35 +90,62 @@ export default class Feed extends react.Component <{},any> {
       }
       */
 
-    async componentDidMount() 
+      async componentDidMount(){
+       this.handleUserChange();
+      }
+      
+      setDate = () => {
+        var date = new Date();
+        return(date.getMonth()+1 + '/' + date.getDate() + '/' + date.getFullYear())
+      }
+
+      async componentDidUpdate(prevProps, prevState)
       {
-        this.handleUserChange();
-        var js = 
-        '{"username":"' + this.state.username 
-          +'"}';
-        try{
-          const response = await fetch(BASE_URL + 'api/getData',
-          {
-              method: 'POST',
-              headers: new Headers({'Content-Type':'application/json'}),
-              body:js,
-          })
-          var res = JSON.parse(await response.text());
-          this.setState({
-            loading: false,
-            dataSource: res
-            })
-          if( res.error !=  '' )
+        if(this.state.username !== prevState.username){
+        
+          console.log('user is: ' + this.state.username)
+          
+          var js = 
+          '{"username":"' + this.state.username
+            +'"}';
+          try{
+            const response = await fetch(BASE_URL + 'api/getData',
             {
-                console.log(this.state.username + ' ' + res.error);
-                //returns error user doesnt exist, and the rest of data becomes undefined
+                method: 'POST',
+                headers: new Headers({'Content-Type':'application/json'}),
+                body:js,
+            })
+            var res = JSON.parse(await response.text());
+            this.setState({
+              loading: false,
+              dataStocks: res.stocks,
+              dataDates: res.dates,
+              dataValues: res.values,
+              fullData: [...this.state.dataStocks,...this.state.dataValues, ...this.state.dataDates]
+              })
+            
+            if( res.error !=  '' )
+              {
+                  console.log(this.state.username + ': ' + res.error);
+                  //returns error user doesnt exist, and the rest of data becomes undefined
+              }
+            else{
+              
             }
-          }
-          catch(e){
-            console.log(e.toString());
+            }
+            catch(e){
+              console.log(e.toString());
+            }
           }
       }
 
+   
+      Item = ({ title }) => (
+        <View style={styles.item}>
+          <Text style={styles.lightText}>{title}</Text>
+        </View>
+      );
+      
       FlatListItemSeparator = () => {
         return (
           <View 
@@ -122,94 +157,93 @@ export default class Feed extends react.Component <{},any> {
           />
         );
       }
-
       renderItem=(data)=>
-        <TouchableOpacity style={styles.list}>
-          <Text style={styles.lightText}>{data.item.values}</Text>
-          <Text style={styles.lightText}>{data.item.stocks}</Text>
-        </TouchableOpacity>
-        render(){
+      <TouchableOpacity style={styles.list}>
+        <Text style={styles.lightText}>     {data.index+1}.                        {data.item}</Text>
+      </TouchableOpacity>
 
-          
-
-          if(this.state.loading){
-            return( 
-              <View style={styles.loader}> 
-                <ActivityIndicator size="large" color="#0c9"/>
-              </View>
-          )}
-            return(
-              
-            <View style={styles.container}>
-              
-              <View style={styles.logoffbutton}>
-                <LogButton ScreenName= "Login" /> 
-              </View>
-              <Text style={styles.text}>welcome, {this.state.username} </Text>
-             
-              <LineChart
-                data={{
-                  labels: [
-                    this.state.dataSource.dates[0],
-                    //this.state.dataSource.movies[1].title,
-                    //this.state.dataSource.movies[2].title,
-                    //this.state.dataSource.movies[3].title,
-                    //this.state.dataSource.movies[4].title,
-                  ],
-                  datasets: [
-                    {
-                      data: [1000, 2000, 3000, 
-                        //this.state.dataSource.values[0],
-                        //this.state.dataSource.movies[1].releaseYear,
-                        //this.state.dataSource.movies[2].releaseYear,
-                        //this.state.dataSource.movies[3].releaseYear,
-                        //this.state.dataSource.movies[4].releaseYear,
-                      ]
-                    }
-                  ]
-                }}
-                width={350} // from react-native
-                height={200}
-                yAxisLabel=""
-                yAxisSuffix=""
-                yAxisInterval={1} // optional, defaults to 1
-                chartConfig={{
-                  backgroundColor: _GRAY,
-                  backgroundGradientFrom: _GRAY,
-                  backgroundGradientTo: _GRAY,
-                  decimalPlaces: 0, // optional, defaults to 2dp
-                  color: (opacity = 1) => _BLUE,
-                  labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-                  style: {
-                    borderRadius: 16
-                  },
-                  propsForDots: {
-                    r: '0',
-                    strokeWidth: "2",
-                    stroke: _BLUE2
+      render(){
+      
+        if(this.state.loading){
+          return( 
+            <View style={styles.loader}> 
+              <ActivityIndicator size="large" color="#0c9"/>
+            </View>
+        )}
+        
+        return(
+            
+          <View style={styles.container}>
+            
+            <View style={styles.logoffbutton}>
+              <LogButton ScreenName= "Login" /> 
+            </View>
+            <Text style={styles.text}>welcome, {this.state.username} </Text>
+            
+            <LineChart
+              data={{
+                labels: [
+                  this.state.dataDates[0],
+                  this.state.dataDates[1],
+                  this.state.dataDates[2],
+                  this.state.dataDates[3],
+                ],
+                datasets: [
+                  {
+                    data: [ 
+                      this.state.dataValues[0],
+                      this.state.dataValues[1],
+                      this.state.dataValues[2],
+                      this.state.dataValues[3],
+                    ]
                   }
-                }}
-                bezier
-                style={{
-                  marginVertical: 8,
+                ]
+              }}
+              width={350} // from react-native
+              height={200}
+              yAxisLabel=""
+              yAxisSuffix=""
+              yAxisInterval={1} // optional, defaults to 1
+              chartConfig={{
+                backgroundColor: _GRAY,
+                backgroundGradientFrom: _GRAY,
+                backgroundGradientTo: _GRAY,
+                decimalPlaces: 0, // optional, defaults to 2dp
+                color: (opacity = 1) => _BLUE,
+                labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+                style: {
                   borderRadius: 16
-                }}
-              />
-              <Text style={styles.text2}> My Stocks {this.state.dataSource.stocks[0]}</Text>
-                
-              <View style={styles.listWindow}>
+                },
+                propsForDots: {
+                  r: '0',
+                  strokeWidth: "2",
+                  stroke: _BLUE2
+                }
+              }}
+              bezier
+              style={{
+                marginVertical: 8,
+                borderRadius: 16
+              }}
+            />
+            <Text style={styles.text2}> My Stocks as of {this.setDate()} </Text>
+            <View style={styles.listWindow}>
                 <FlatList
-                    data= {this.state.dataSource.stocks}
+                    data= {this.state.dataStocks}
                     ItemSeparatorComponent = {this.FlatListItemSeparator}
-                    renderItem= {item=> this.renderItem(item)}
-                    keyExtractor= {item=>item.id.toString()}
+                    renderItem= {(item) => this.renderItem(item)
+                     
+                    }
+                    keyExtractor= {(index)=> index.toString()}
                 />
               </View>
-            </View>
-            
-          )
-        }
+          
+          </View>
+          
+        )
       }
+    }
+
   const styles = StyleSheet.create({
     container: {
       flex: 1,
@@ -248,6 +282,11 @@ export default class Feed extends react.Component <{},any> {
       color: _BLUE2,
       
     },
+    item: {
+      backgroundColor: _BLUE,
+      padding: 20,
+      marginVertical: 8
+    },
     list:{
       paddingVertical: 4,
       margin: 5,
@@ -262,7 +301,7 @@ export default class Feed extends react.Component <{},any> {
       height: 300,
     },
     lightText:{
-      fontSize: 12,
+      fontSize: 18,
       alignItems: 'flex-start',
     }
   });
