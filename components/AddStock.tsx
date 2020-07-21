@@ -3,7 +3,7 @@ import react, {Component} from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { useIsFocused } from '@react-navigation/native';
 import AsyncStorage from '@react-native-community/async-storage';
-import { StyleSheet, Text, View, Button, TextInput, TouchableOpacity, ImageBackground, Image, Keyboard } from 'react-native';
+import { StyleSheet, Animated, Text, View, Button, TextInput, TouchableOpacity, ImageBackground, Image, Keyboard } from 'react-native';
 
 var _BLUE = '#2196f3';
 var _GRAY = '#303030';
@@ -16,7 +16,8 @@ export default class AddStock extends React.Component <{},any>{
     this.state = {
       loading: true,
       username: '',
-      stock: '',
+      message: '',
+      stock: ''
      };
   }
 
@@ -32,7 +33,7 @@ export default class AddStock extends React.Component <{},any>{
   }
 
   componentDidMount(){
-    
+    this.setState({message: ''})
     this.handleUserChange();
   }
 
@@ -44,7 +45,7 @@ export default class AddStock extends React.Component <{},any>{
     {
         var js = 
         '{ "username":"' + this.state.username + 
-        '","stock":"' + this.state.stock 
+        '","stock":"' + this.state.stock.toUpperCase()
         +'"}';
         
         const response = await fetch(BASE_URL + 'api/addStock',
@@ -60,24 +61,25 @@ export default class AddStock extends React.Component <{},any>{
         if(res.error==''){
           Keyboard.dismiss();
           this.handleStockChange('');
-          this.props.navigation.navigate('Feed');
+          this.setState({message: "Stock has been Added!"})
         }
         else{
-          alert('Stock not found!')
+          this.setState({message: 'Stock not found!'})
           console.log(this.state.message)
         }
     }
 
     deleteStock = async event => 
     {
-        event.preventDefault();     
-        if( this.state.loginUsername == '' || this.state.loginPassword == '' ){
-        alert('Please fill out all fields!');
+        event.preventDefault();  
+        console.log(this.state.stock.toUpperCase())   
+        if( this.state.stock == ''){
+        alert('Please enter a stock!');
         }
         else{
             var js = 
             '{ "username":"' + this.state.username + 
-            '","stock":"' + this.state.stock 
+            '","stock":"' + this.state.stock.toUpperCase()
             +'"}';
             
             const response = await fetch(BASE_URL + 'api/deleteStock',
@@ -93,11 +95,11 @@ export default class AddStock extends React.Component <{},any>{
             if(res.error==''){
                 Keyboard.dismiss();
                 this.handleStockChange('');
-                this.props.navigation.navigate('Feed');
+                this.setState({message: "Stock has been Removed!"})
             }
             else{
               console.log(this.state.message)
-              alert('Stock not found!')
+              this.setState({message: 'Stock not found!'})
             }
     }
   }
@@ -127,6 +129,7 @@ export default class AddStock extends React.Component <{},any>{
                         onPress = {this.deleteStock}
                     />
                 </View>
+                <Text style={title.status}> {this.state.message} </Text>
         </View>
     );
   }
@@ -164,6 +167,14 @@ export default class AddStock extends React.Component <{},any>{
       width: 150,
       height: 50,
   },
+
+  status: {
+    paddingTop: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontSize: 18,
+    color: 'red',
+},
     text: {
       flex: 0,
       fontSize: 18,

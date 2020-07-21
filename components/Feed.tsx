@@ -190,18 +190,19 @@ export default class Feed extends react.Component <{},any> {
                 datasets: [
                   {
                     data: [ 
-                      this.state.dataValues[this.state.dataDates.length-4],
-                      this.state.dataValues[this.state.dataDates.length-3],
-                      this.state.dataValues[this.state.dataDates.length-2],
-                      this.state.dataValues[this.state.dataDates.length-1],
+                      this.state.dataValues[this.state.dataValues.length-4],
+                      this.state.dataValues[this.state.dataValues.length-3],
+                      this.state.dataValues[this.state.dataValues.length-2],
+                      this.state.dataValues[this.state.dataValues.length-1],
                     ]
                   }
                 ]
               }}
               width={350} // from react-native
               height={200}
-              yAxisLabel=""
-              yAxisSuffix=""
+              yAxisLabel="$"
+           
+              yAxisSuffix=".00"
               yAxisInterval={1} // optional, defaults to 1
               chartConfig={{
                 backgroundColor: _GRAY,

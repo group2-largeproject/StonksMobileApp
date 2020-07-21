@@ -51,8 +51,8 @@ function Reset() {
 
     return (
         <View style={title.container}>
-            <Text style= {title.TextStyle}> Enter your email to reset password </Text>
-            <Text style= {title.TextStyle}>a temporary password will be send to your email. </Text>
+            <Text style= {title.TextStyle}> Enter you email address to change your password </Text>
+            <Text style= {title.TextStyle}> if you have recently forgotten and have a temporary one</Text>
 
             <TextInput
                 style={title.input}

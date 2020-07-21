@@ -59,6 +59,12 @@ export default class LoginScreen extends React.Component <{},any>{
         console.log('ready state changed');
     }
 
+    doMath = () => {
+        var num =1;
+        var sum = num+num;
+        return sum;
+    }
+
     doLogin = async event => 
     {
         event.preventDefault();     
@@ -83,7 +89,8 @@ export default class LoginScreen extends React.Component <{},any>{
             this.setState({message: res.error})
             if(res.error==''){
                 storeData(this.state.loginUsername);
-                console.log(res.email);
+                this.setState({loginUsername: ''})
+                this.setState({loginPassword: ''})
                 {this.props.navigation.navigate('Home', {screen: 'Feed'})}
             }
         }
